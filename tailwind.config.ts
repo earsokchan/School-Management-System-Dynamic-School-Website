@@ -94,6 +94,11 @@ const config: Config = {
   				'var(--font-khmer)',
   				'system-ui',
   				'sans-serif'
+  			],
+  			notosans: [
+  				'var(--font-noto-sans-khmer)',
+  				'system-ui',
+  				'sans-serif'
   			]
   		},
   		letterSpacing: {

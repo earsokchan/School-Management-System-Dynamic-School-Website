@@ -24,14 +24,14 @@ export function Hero({ locale }: { locale: Locale }) {
       </div>
 
       <div
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-navy-dark/85 via-navy/60 to-navy-dark/90"
+        className="absolute inset-0 -z-10 bg-black/50"
         aria-hidden="true"
       />
 
-      <div className="container-site py-24 text-center">
+      <div className="container-site py-32 text-center animate-in fade-in duration-1000">
         <p
           className={cn(
-            "mx-auto mb-7 inline-flex items-center gap-2.5 rounded-md border border-gold/40 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-gold backdrop-blur",
+            "mx-auto mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/20 glass px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-xl transition-transform hover:scale-105",
             locale === "km" && "tracking-[0.04em] text-sm normal-case",
           )}
         >
@@ -40,26 +40,26 @@ export function Hero({ locale }: { locale: Locale }) {
             alt=""
             width={36}
             height={48}
-            className="h-6 w-auto shrink-0 object-contain"
+            className="h-6 w-auto shrink-0 object-contain drop-shadow-md"
           />
           {t("hero.badge")}
         </p>
 
         <h1
           className={cn(
-            "mx-auto max-w-5xl text-white text-balance",
+            "mx-auto max-w-5xl text-white text-balance drop-shadow-lg animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-150 fill-mode-both",
             locale === "km"
-              ? "font-moul text-[2rem] leading-normal sm:text-[2.6rem] lg:text-[3.2rem]"
-              : "font-bold uppercase leading-[1.05] tracking-tightest text-4xl sm:text-6xl lg:text-7xl",
+              ? "font-moul text-[2.2rem] leading-normal sm:text-[3rem] lg:text-[3.8rem]"
+              : "font-bold uppercase leading-[1.05] tracking-tightest text-5xl sm:text-7xl lg:text-8xl",
           )}
         >
           {locale === "km" ? schoolName.km : "HUN SEN KAMPONG TRALACH"}
           <span
             className={cn(
-              "block text-gold",
+              "block text-gold drop-shadow-md",
               locale === "km"
-                ? "font-khmer mt-3 text-xl sm:text-2xl"
-                : "mt-2 text-2xl sm:text-3xl",
+                ? "font-khmer mt-4 text-2xl sm:text-3xl"
+                : "mt-4 text-3xl sm:text-4xl tracking-widest",
             )}
           >
             {locale === "km" ? t("hero.subtitle") : "HIGH SCHOOL"}
@@ -68,10 +68,10 @@ export function Hero({ locale }: { locale: Locale }) {
 
         <p
           className={cn(
-            "mx-auto mt-6 text-balance",
+            "mx-auto mt-8 text-balance animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-300 fill-mode-both",
             locale === "km"
-              ? "text-[16px] leading-relaxed text-primary-foreground/80"
-              : "text-lg text-primary-foreground/80 sm:text-xl",
+              ? "text-[18px] leading-relaxed text-gray-200"
+              : "text-xl text-gray-200 sm:text-2xl font-light tracking-wide",
           )}
         >
           {pick(royalMotto, locale)}
@@ -79,19 +79,19 @@ export function Hero({ locale }: { locale: Locale }) {
 
         <p
           className={cn(
-            "mx-auto mt-3 max-w-2xl text-balance text-sm text-primary-foreground/70",
-            locale === "km" && "text-[15px]",
+            "mx-auto mt-4 max-w-2xl text-balance text-sm text-gray-300 animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-500 fill-mode-both",
+            locale === "km" && "text-[16px]",
           )}
         >
           {t("hero.description")}
         </p>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-center gap-6 sm:flex-row animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-700 fill-mode-both">
           <ButtonLink
             href={`/${locale}/results`}
             variant="red"
             icon={ArrowRight}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto shadow-lg shadow-red/20 hover:shadow-red/40 hover:-translate-y-1 transition-all"
           >
             {t("hero.primaryCta")}
           </ButtonLink>
@@ -99,7 +99,7 @@ export function Hero({ locale }: { locale: Locale }) {
             href={`/${locale}/academics`}
             variant="outline"
             icon={Newspaper}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto glass hover:bg-white/20 text-white border-white/30 hover:-translate-y-1 transition-all"
           >
             {t("hero.secondaryCta")}
           </ButtonLink>

@@ -58,8 +58,8 @@ export function MobileMenu({ open, onClose, locale, nav }: MobileMenuProps) {
 
   return (
     <Sheet open={open} onOpenChange={(next) => (!next ? onClose() : undefined)}>
-      <SheetContent side="right" className="w-full max-w-sm gap-0 p-0">
-        <SheetHeader className="border-b px-5 py-4 text-left">
+      <SheetContent side="right" className="w-full max-w-sm gap-0 p-0 bg-background/95 backdrop-blur-xl border-l-white/20 shadow-2xl">
+        <SheetHeader className="border-b border-border/50 px-5 py-4 text-left">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-base font-semibold text-foreground">
               {locale === "km" ? "ម៉ឺនុយ" : "Menu"}

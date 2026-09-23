@@ -16,14 +16,14 @@ export function AdminPageHeader({
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <h1 className="font-khmer text-2xl font-bold text-foreground">{adminT(locale, titleKey)}</h1>
+        <h1 className="font-notosans text-2xl font-bold text-foreground">{adminT(locale, titleKey)}</h1>
         {subtitleKey ? (
           <p className="mt-1 text-sm text-muted-foreground">{adminT(locale, subtitleKey)}</p>
         ) : null}
       </div>
       <button
         type="button"
-        className="inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-light"
+        className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
       >
         <Plus className="h-4 w-4" aria-hidden="true" />
         {adminT(locale, "common.newItem")}

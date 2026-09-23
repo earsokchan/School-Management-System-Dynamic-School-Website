@@ -90,8 +90,8 @@ export function Header({ locale }: { locale: Locale }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b bg-background transition-shadow duration-300",
-        scrolled ? "shadow-sm" : "shadow-none",
+        "sticky top-0 z-50 w-full transition-all duration-300",
+        scrolled ? "bg-background/80 backdrop-blur-md shadow-sm border-b border-border/50" : "bg-background border-b",
       )}
     >
       {/* Utility bar */}

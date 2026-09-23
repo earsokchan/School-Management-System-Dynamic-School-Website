@@ -1,4 +1,4 @@
-import { Kantumruy_Pro, Moul } from "next/font/google";
+import { Kantumruy_Pro, Moul, Noto_Sans_Khmer } from "next/font/google";
 
 export const kantumruyPro = Kantumruy_Pro({
   subsets: ["khmer", "latin"],
@@ -13,4 +13,10 @@ export const moul = Moul({
   display: "swap",
 });
 
-export const fontsVariables = `${kantumruyPro.variable} ${moul.variable}`;
+export const notoSansKhmer = Noto_Sans_Khmer({
+  subsets: ["khmer", "latin"],
+  variable: "--font-noto-sans-khmer",
+  display: "swap",
+});
+
+export const fontsVariables = `${kantumruyPro.variable} ${moul.variable} ${notoSansKhmer.variable}`;

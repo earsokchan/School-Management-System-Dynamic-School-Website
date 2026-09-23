@@ -58,16 +58,16 @@ function AdminSidebar({
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-navy text-white transition-transform duration-300 lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-black text-white transition-transform duration-300 lg:translate-x-0 font-notosans",
         open ? "translate-x-0" : "-translate-x-full",
       )}
       aria-label={adminT(locale, "admin")}
     >
       <div className="flex h-16 items-center gap-3 border-b border-white/10 px-5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold text-foreground">
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black">
           <Logo className="h-5 w-5" aria-hidden="true" />
         </span>
-        <span className="font-khmer text-sm font-bold leading-tight">
+        <span className="font-notosans text-sm font-bold leading-tight">
           {locale === "km" ? "វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច" : "Hun Sen Kampong Tralach"}
         </span>
         <button
@@ -93,7 +93,7 @@ function AdminSidebar({
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
-                    active ? "bg-gold text-foreground" : "text-white/75 hover:bg-white/10 hover:text-white",
+                    active ? "bg-white text-black" : "text-white/75 hover:bg-white/10 hover:text-white",
                     locale === "km" && "text-[15px]",
                   )}
                 >
@@ -142,7 +142,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <AdminLocaleContext.Provider value={locale}>
-      <div className="min-h-screen bg-secondary">
+      <div className="min-h-screen bg-secondary font-notosans">
         <AdminSidebar
           locale={locale}
           pathname={pathname}
@@ -183,7 +183,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   aria-pressed={locale === "km"}
                   className={cn(
                     "px-3 py-1.5 text-xs font-semibold transition-colors",
-                    locale === "km" ? "bg-navy text-white" : "text-muted-foreground hover:bg-secondary",
+                    locale === "km" ? "bg-black text-white" : "text-muted-foreground hover:bg-secondary",
                   )}
                 >
                   ខ្មែរ
@@ -194,7 +194,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   aria-pressed={locale === "en"}
                   className={cn(
                     "px-3 py-1.5 text-xs font-semibold transition-colors",
-                    locale === "en" ? "bg-navy text-white" : "text-muted-foreground hover:bg-secondary",
+                    locale === "en" ? "bg-black text-white" : "text-muted-foreground hover:bg-secondary",
                   )}
                 >
                   EN
