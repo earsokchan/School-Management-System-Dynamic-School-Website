@@ -79,7 +79,7 @@ export function StudentResults({ locale }: { locale: Locale }) {
   const columns = rows.length > 0 ? rows[0].subjects.map((s) => s.subject) : [];
 
   return (
-    <section className="bg-primary pb-20 pt-10 text-primary-foreground sm:pb-28">
+    <section className="bg-[#1D1D1D] pb-20 pt-10 text-primary-foreground sm:pb-28">
       <Container>
         <SectionHeading
           locale={locale}
@@ -187,7 +187,7 @@ export function StudentResults({ locale }: { locale: Locale }) {
                       )}
                     />
                   </div>
-                  <Button type="submit">
+                  <Button type="submit" className="bg-gold text-white hover:bg-gold-dark">
                     <Search aria-hidden="true" />
                     {t("results.search")}
                   </Button>

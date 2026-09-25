@@ -23,7 +23,7 @@ export function Footer({ locale }: { locale: Locale }) {
   const hours = workingHours;
 
   return (
-    <footer className="bg-navy-dark text-primary-foreground/70">
+    <footer className="bg-navy text-primary-foreground/70">
       <div className="container-site py-16">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.4fr]">
           {/* Brand */}
@@ -36,7 +36,7 @@ export function Footer({ locale }: { locale: Locale }) {
               href={contactInfo.telegram}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-7 inline-flex h-10 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-bold text-white transition-colors hover:bg-[#0088cc]"
+              className="mt-7 inline-flex h-10 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-bold text-white transition-colors hover:bg-gold"
             >
               <Send className="h-4 w-4" aria-hidden="true" />
               {t("footer.telegram")}

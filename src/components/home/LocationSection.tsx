@@ -11,7 +11,7 @@ export function LocationSection({ locale }: { locale: Locale }) {
   const { t } = getTranslations(locale);
 
   return (
-    <section className="bg-primary py-20 sm:py-28" aria-labelledby="location-title">
+    <section className="bg-[#1D1D1D] py-20 sm:py-28" aria-labelledby="location-title">
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal>
@@ -72,7 +72,7 @@ export function LocationSection({ locale }: { locale: Locale }) {
               className="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-white/15"
               aria-label={t("location.openMaps")}
             >
-              <div className="absolute inset-0 bg-[linear-gradient(150deg,rgba(0,51,153,0.35)_0%,rgba(0,34,102,0.85)_55%,rgba(204,0,0,0.55)_100%)]">
+              <div className="absolute inset-0 bg-[linear-gradient(150deg,rgba(243,128,32,0.30)_0%,rgba(35,35,35,0.88)_55%,rgba(246,130,31,0.55)_100%)]">
                 <div
                   className="absolute inset-0 opacity-40 [background-size:36px_36px] [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)]"
                   aria-hidden="true"

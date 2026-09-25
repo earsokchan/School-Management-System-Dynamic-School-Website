@@ -42,7 +42,7 @@ export default async function LangLayout({ children, params }: LangLayoutProps) 
       <head>
         <link
           rel="icon"
-          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230B1F3A'/%3E%3Ctext x='50' y='70' font-size='56' text-anchor='middle' fill='%23D4A72C'%3E%E0%9E%9C%3C/text%3E%3C/svg%3E"
+          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231D1D1D'/%3E%3Ctext x='50' y='70' font-size='56' text-anchor='middle' fill='%23F38020'%3E%E0%9E%9C%3C/text%3E%3C/svg%3E"
         />
       </head>
       <body className="flex min-h-screen flex-col antialiased">

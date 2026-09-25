@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminStudentsTable } from "@/components/admin/previews";
+import { StudentManager } from "@/components/admin/StudentManager";
 
 export const metadata: Metadata = { title: "Admin Students", robots: { index: false } };
 
 export default function AdminStudentsPage() {
   return (
-    <>
-      <AdminPageHeader titleKey="nav.students" />
-      <AdminStudentsTable />
-    </>
+    <StudentManager />
   );
 }

@@ -12,21 +12,21 @@ const config: Config = {
   	extend: {
   		colors: {
   			navy: {
-  				DEFAULT: '#003399',
-  				light: '#0052CC',
-  				dark: '#002266'
+  				DEFAULT: '#1D1D1D', // Cloudflare dark
+  				light: '#333333',
+  				dark: '#000000'
   			},
   			creeper: {
-  				DEFAULT: '#cc0000',
-  				dark: '#a80000',
-  				light: '#d92626'
+  				DEFAULT: '#F6821F', // Cloudflare orange
+  				dark: '#D97017',
+  				light: '#FFA04D'
   			},
   			gold: {
-  				DEFAULT: '#d4a72c',
-  				dark: '#b0891f',
-  				light: '#e0b952'
+  				DEFAULT: '#F38020', // Exact CF Orange
+  				dark: '#D97017',
+  				light: '#F89A46'
   			},
-  			canvas: '#ffffff',
+  			canvas: '#F9FAFB',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -80,9 +80,14 @@ const config: Config = {
   		},
   		fontFamily: {
   			sans: [
-  				'var(--font-khmer)',
-  				'system-ui',
-  				'sans-serif'
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'"SF Pro Text"',
+  				'"Segoe UI"',
+  				'Roboto',
+  				'Helvetica',
+  				'Arial',
+  				'sans-serif',
   			],
   			khmer: [
   				'var(--font-khmer)',
@@ -104,10 +109,10 @@ const config: Config = {
   		letterSpacing: {
   			tightest: '-0.03em'
   		},
-  		boxShadow: {
-  			card: '0 10px 40px -12px rgba(0, 51, 153, 0.14)',
-  			lift: '0 24px 60px -16px rgba(0, 34, 102, 0.24)'
-  		},
+boxShadow: {
+   			card: '0 4px 16px -6px rgba(0, 0, 0, 0.1)',
+   			lift: '0 24px 60px -16px rgba(0, 0, 0, 0.22)'
+   		},
   		animation: {
   			'fade-up': 'fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
   			'fade-in': 'fadeIn 0.9s ease both',

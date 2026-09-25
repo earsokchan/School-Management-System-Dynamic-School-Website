@@ -14,7 +14,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
       <h2 className="border-b border-border px-5 py-4 text-sm font-bold text-foreground">{title}</h2>
-      <div className="divide-y divide-slate-50">{children}</div>
+      <div className="divide-y divide-border">{children}</div>
     </div>
   );
 }

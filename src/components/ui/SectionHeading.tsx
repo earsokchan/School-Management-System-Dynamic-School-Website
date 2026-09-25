@@ -24,7 +24,6 @@ export function SectionHeading({
   description,
   align = "left",
   light = false,
-  red = false,
 }: SectionHeadingProps) {
   const { t } = getTranslations(locale);
   const eyebrowText = t(eyebrowKey);
@@ -38,9 +37,8 @@ export function SectionHeading({
     >
       <p
         className={cn(
-          "eyebrow flex items-center gap-3",
+          "eyebrow flex items-center gap-3 text-gold",
           align === "center" && "justify-center",
-          light ? "text-gold" : red ? "text-creeper" : "text-foreground",
         )}
       >
         <EyebrowLabel />

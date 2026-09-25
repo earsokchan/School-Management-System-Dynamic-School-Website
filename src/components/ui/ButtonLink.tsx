@@ -20,10 +20,10 @@ const variantMap: Record<
   { variant: ButtonVariant; className?: string }
 > = {
   navy: { variant: "default" },
-  red: { variant: "destructive" },
+  red: { variant: "default", className: "bg-gold text-white hover:bg-gold-dark hover:text-white" },
   gold: {
     variant: "default",
-    className: "bg-gold text-foreground shadow-sm hover:bg-gold-dark hover:text-foreground",
+    className: "bg-gold text-white shadow-sm hover:bg-gold-dark hover:text-white",
   },
   white: {
     variant: "outline",

@@ -213,7 +213,7 @@ export function ContactSection({ locale }: { locale: Locale }) {
                       />
                     </div>
 
-                    <Button type="submit" variant="destructive" className="w-full">
+                    <Button type="submit" className="w-full">
                       <Send aria-hidden="true" />
                       {t("contact.send")}
                     </Button>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ChevronDown, ArrowRight, Newspaper } from "lucide-react";
+import { ArrowRight, Newspaper, MapPin, GraduationCap } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { pick } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
@@ -11,111 +11,139 @@ export function Hero({ locale }: { locale: Locale }) {
   const { t } = getTranslations(locale);
 
   return (
-    <section className="relative isolate flex min-h-[88vh] items-center justify-center overflow-hidden bg-navy-dark">
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src="/images/school/banner.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="animate-slow-zoom object-cover"
-        />
-      </div>
+    <section className="relative isolate overflow-hidden bg-white" aria-labelledby="hero-title">
 
-      <div
-        className="absolute inset-0 -z-10 bg-black/50"
-        aria-hidden="true"
-      />
 
-      <div className="container-site py-32 text-center animate-in fade-in duration-1000">
-        <p
-          className={cn(
-            "mx-auto mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/20 glass px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-xl transition-transform hover:scale-105",
-            locale === "km" && "tracking-[0.04em] text-sm normal-case",
-          )}
-        >
-          <Image
-            src="/images/school/moeys-emblem.png"
-            alt=""
-            width={36}
-            height={48}
-            className="h-6 w-auto shrink-0 object-contain drop-shadow-md"
-          />
-          {t("hero.badge")}
-        </p>
-
-        <h1
-          className={cn(
-            "mx-auto max-w-5xl text-white text-balance drop-shadow-lg animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-150 fill-mode-both",
-            locale === "km"
-              ? "font-moul text-[2.2rem] leading-normal sm:text-[3rem] lg:text-[3.8rem]"
-              : "font-bold uppercase leading-[1.05] tracking-tightest text-5xl sm:text-7xl lg:text-8xl",
-          )}
-        >
-          {locale === "km" ? schoolName.km : "HUN SEN KAMPONG TRALACH"}
-          <span
+      <div className="container-site grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:py-24">
+        {/* Copy */}
+        <div className="animate-fade-up">
+          <p
             className={cn(
-              "block text-gold drop-shadow-md",
-              locale === "km"
-                ? "font-khmer mt-4 text-2xl sm:text-3xl"
-                : "mt-4 text-3xl sm:text-4xl tracking-widest",
+              "inline-flex items-center gap-2.5 rounded-full border border-border bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-foreground shadow-sm",
+              locale === "km" && "normal-case tracking-normal text-[13px]",
             )}
           >
-            {locale === "km" ? t("hero.subtitle") : "HIGH SCHOOL"}
-          </span>
-        </h1>
+            <Image
+              src="/images/school/moeys-emblem.png"
+              alt=""
+              width={36}
+              height={48}
+              className="h-5 w-auto shrink-0 object-contain"
+            />
+            <span className="h-1.5 w-1.5 rounded-full bg-gold" aria-hidden="true" />
+            {t("hero.badge")}
+          </p>
 
-        <p
-          className={cn(
-            "mx-auto mt-8 text-balance animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-300 fill-mode-both",
-            locale === "km"
-              ? "text-[18px] leading-relaxed text-gray-200"
-              : "text-xl text-gray-200 sm:text-2xl font-light tracking-wide",
-          )}
-        >
-          {pick(royalMotto, locale)}
-        </p>
-
-        <p
-          className={cn(
-            "mx-auto mt-4 max-w-2xl text-balance text-sm text-gray-300 animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-500 fill-mode-both",
-            locale === "km" && "text-[16px]",
-          )}
-        >
-          {t("hero.description")}
-        </p>
-
-        <div className="mt-12 flex flex-col items-center justify-center gap-6 sm:flex-row animate-in slide-in-from-bottom-6 fade-in duration-1000 delay-700 fill-mode-both">
-          <ButtonLink
-            href={`/${locale}/results`}
-            variant="red"
-            icon={ArrowRight}
-            className="w-full sm:w-auto shadow-lg shadow-red/20 hover:shadow-red/40 hover:-translate-y-1 transition-all"
+          <h1
+            id="hero-title"
+            className={cn(
+              "mt-7 text-balance animate-in slide-in-from-bottom-5 fade-in duration-700 delay-100 fill-mode-both",
+              locale === "km"
+                ? "font-moul text-[2.2rem] leading-[1.4] text-foreground sm:text-[2.8rem]"
+                : "text-4xl font-extrabold leading-[1.06] tracking-tight text-foreground sm:text-5xl lg:text-6xl",
+            )}
           >
-            {t("hero.primaryCta")}
-          </ButtonLink>
-          <ButtonLink
-            href={`/${locale}/academics`}
-            variant="outline"
-            icon={Newspaper}
-            className="w-full sm:w-auto glass hover:bg-white/20 text-white border-white/30 hover:-translate-y-1 transition-all"
+            {locale === "km" ? schoolName.km : "HUN SEN KAMPONG TRALACH"}
+            <span
+              className={cn(
+                "block text-gold",
+                locale === "km"
+                  ? "font-khmer mt-3 text-2xl sm:text-3xl"
+                  : "mt-3 text-3xl sm:text-4xl tracking-tight",
+              )}
+            >
+              {locale === "km" ? t("hero.subtitle") : "HIGH SCHOOL"}
+            </span>
+          </h1>
+
+          <p
+            className={cn(
+              "mt-7 max-w-xl text-balance text-base leading-relaxed text-muted-foreground animate-in slide-in-from-bottom-5 fade-in duration-700 delay-200 fill-mode-both sm:text-lg",
+              locale === "km" && "text-[17px]",
+            )}
           >
-            {t("hero.secondaryCta")}
-          </ButtonLink>
+            {pick(royalMotto, locale)}
+          </p>
+
+          <p
+            className={cn(
+              "mt-3 max-w-xl text-balance text-sm text-muted-foreground animate-in slide-in-from-bottom-5 fade-in duration-700 delay-300 fill-mode-both",
+              locale === "km" && "text-[15px]",
+            )}
+          >
+            {t("hero.description")}
+          </p>
+
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row animate-in slide-in-from-bottom-5 fade-in duration-700 delay-400 fill-mode-both">
+            <ButtonLink
+              href={`/${locale}/results`}
+              variant="navy"
+              icon={ArrowRight}
+              className="w-full sm:w-auto"
+            >
+              {t("hero.primaryCta")}
+            </ButtonLink>
+            <ButtonLink
+              href={`/${locale}/academics`}
+              variant="outlineLight"
+              icon={Newspaper}
+              className="w-full border-border bg-white text-foreground hover:bg-secondary sm:w-auto"
+            >
+              {t("hero.secondaryCta")}
+            </ButtonLink>
+          </div>
+
+          <ul className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs font-medium text-muted-foreground animate-in fade-in duration-700 delay-500 fill-mode-both">
+            <li className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4 text-gold" aria-hidden="true" />
+              {locale === "km" ? "កម្មវិធីសិក្សាផ្លូវការ" : "Official accredited programs"}
+            </li>
+            <li className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-gold" aria-hidden="true" />
+              {locale === "km" ? "ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង" : "Kampong Tralach, Kampong Chhnang"}
+            </li>
+          </ul>
+        </div>
+
+        {/* Visual */}
+        <div className="relative animate-fade-in delay-200 fill-mode-both">
+          <div className="relative overflow-hidden rounded-2xl border border-border shadow-lift">
+            <Image
+              src="/images/school/banner.jpg"
+              alt={
+                locale === "km"
+                  ? "សាលារៀនវិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច"
+                  : "Hun Sen Kampong Tralach High School campus"
+              }
+              width={1400}
+              height={900}
+              priority
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="h-[260px] w-full object-cover sm:h-[340px] lg:h-[460px]"
+            />
+            <div
+              className="absolute inset-0 bg-gradient-to-t from-navy/45 via-transparent to-transparent"
+              aria-hidden="true"
+            />
+          </div>
+
+          <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl border border-border bg-white/95 px-4 py-3 shadow-card backdrop-blur sm:right-auto sm:w-fit">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gold text-white">
+              <MapPin className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                {locale === "km" ? "ទីតាំង" : "Location"}
+              </p>
+              <p className="truncate text-sm font-bold text-foreground">
+                {locale === "km"
+                  ? "ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង"
+                  : "Kampong Tralach, Kampong Chhnang"}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-
-      <a
-        href="#stats"
-        aria-label={t("hero.scroll")}
-        className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-white/60 transition-colors hover:text-white"
-      >
-        <span className="text-[10px] font-semibold uppercase tracking-[0.25em]">
-          {t("hero.scroll")}
-        </span>
-        <ChevronDown className="h-5 w-5 animate-bounce" aria-hidden="true" />
-      </a>
     </section>
   );
 }

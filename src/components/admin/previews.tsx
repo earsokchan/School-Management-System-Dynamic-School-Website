@@ -1,35 +1,68 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
-import { Pencil, Trash2, MapPin, FileText } from "lucide-react";
+import { Pencil, Trash2, MapPin, FileText, MoreHorizontal, Eye, Copy } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
 import { adminT } from "@/lib/admin-translations";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { news } from "@/data/news";
 import { events } from "@/data/events";
 import { teachers } from "@/data/teachers";
 import { studentResults } from "@/data/results";
 import { gallery, galleryCategories } from "@/data/gallery";
+import { academicPrograms } from "@/data/programs";
 import { formatDate, formatScore } from "@/lib/format";
 import { toKhmerNumerals } from "@/lib/i18n";
 
-function ActionButtons() {
+function ActionButtons({ editUrl }: { editUrl?: string }) {
+  const locale = useAdminLocale();
   return (
-    <span className="flex items-center gap-1">
-      <button
-        type="button"
-        aria-label="Edit"
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-      >
-        <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-      </button>
-      <button
-        type="button"
-        aria-label="Delete"
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-red-50 hover:text-creeper"
-      >
-        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-      </button>
-    </span>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Actions"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-black data-[state=open]:bg-secondary"
+        >
+          <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-40 font-sans shadow-xl rounded-xl border-border/50">
+        <DropdownMenuItem className="cursor-pointer gap-2 py-2" asChild>
+          {editUrl ? (
+            <Link href={editUrl}>
+              <Pencil className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <span className="font-medium">{locale === "km" ? "កែប្រែ" : "Edit"}</span>
+            </Link>
+          ) : (
+            <span className="flex items-center gap-2">
+              <Pencil className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <span className="font-medium">{locale === "km" ? "កែប្រែ" : "Edit"}</span>
+            </span>
+          )}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer gap-2 py-2">
+          <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <span className="font-medium">{locale === "km" ? "មើល" : "View"}</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer gap-2 py-2">
+          <Copy className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <span className="font-medium">{locale === "km" ? "ចម្លង" : "Duplicate"}</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-border/50" />
+        <DropdownMenuItem className="cursor-pointer gap-2 py-2 text-red-600 focus:bg-red-50 focus:text-red-700">
+          <Trash2 className="h-4 w-4" aria-hidden="true" />
+          <span className="font-bold">{locale === "km" ? "លុប" : "Delete"}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -45,9 +78,9 @@ function TableShell({
       <table className="w-full min-w-[760px] text-left">
         <thead>
           <tr className="border-b border-border bg-slate-50">
-            {headers.map((header) => (
+            {headers.map((header, index) => (
               <th
-                key={header}
+                key={index}
                 scope="col"
                 className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-muted-foreground"
               >
@@ -123,36 +156,35 @@ export function AdminEventsTable() {
   );
 }
 
-export function AdminTeachersGrid() {
+export function AdminTeachersTable() {
   const locale = useAdminLocale();
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <TableShell headers={["", adminT(locale, "nav.teachers"), "Subject", ""]}>
       {teachers.map((teacher) => (
-        <div
-          key={teacher.id}
-          className="rounded-xl border border-border bg-white p-5 shadow-sm"
-        >
-          <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full">
-            <Image
-              src={teacher.photo}
-              alt={locale === "km" ? teacher.name.km : teacher.name.en}
-              fill
-              sizes="80px"
-              className="object-cover"
-            />
-          </div>
-          <p className="mt-3 text-center text-sm font-bold text-foreground">
+        <tr key={teacher.id} className="transition-colors hover:bg-slate-50/60">
+          <td className="px-5 py-2 w-16">
+            <div className="relative h-10 w-10 overflow-hidden rounded-md border border-border">
+              <Image
+                src={teacher.photo}
+                alt={locale === "km" ? teacher.name.km : teacher.name.en}
+                fill
+                sizes="40px"
+                className="object-cover"
+              />
+            </div>
+          </td>
+          <td className="px-5 py-3.5 text-sm font-semibold text-foreground whitespace-nowrap">
             {locale === "km" ? teacher.name.km : teacher.name.en}
-          </p>
-          <p className="mt-1 text-center text-xs text-muted-foreground">
+          </td>
+          <td className="px-5 py-3.5 text-sm text-muted-foreground">
             {locale === "km" ? teacher.subject.km : teacher.subject.en}
-          </p>
-          <div className="mt-3 flex justify-center">
+          </td>
+          <td className="px-5 py-3.5 text-right">
             <ActionButtons />
-          </div>
-        </div>
+          </td>
+        </tr>
       ))}
-    </div>
+    </TableShell>
   );
 }
 
@@ -254,6 +286,7 @@ export function AdminGalleryGrid() {
 export function AdminPagesTable() {
   const locale = useAdminLocale();
   const pageLabels: Record<string, { en: string; km: string }> = {
+    home: { en: "Home Page Config", km: "ការកំណត់ទំព័រដើម" },
     about: { en: "About", km: "អំពីសាលា" },
     academics: { en: "Academics", km: "ការសិក្សា" },
     students: { en: "Students", km: "សិស្សានុសិស្ស" },
@@ -264,6 +297,7 @@ export function AdminPagesTable() {
     contact: { en: "Contact", km: "ទំនាក់ទំនង" },
   };
   const pages = [
+    { key: "home", route: "/admin/pages/home", custom: true },
     { key: "about", route: "/about" },
     { key: "academics", route: "/academics" },
     { key: "students", route: "/students" },
@@ -290,7 +324,7 @@ export function AdminPagesTable() {
             </span>
           </td>
           <td className="px-5 py-3.5 text-right">
-            <ActionButtons />
+            <ActionButtons editUrl={"custom" in page ? page.route : undefined} />
           </td>
         </tr>
       ))}
@@ -330,5 +364,36 @@ export function AdminSettingsForm() {
         {galleryCategories.map((category) => category.label.en).join(" · ")}
       </p>
     </div>
+  );
+}
+
+export function AdminAcademicsTable() {
+  const locale = useAdminLocale();
+  return (
+    <TableShell headers={["Grade", "Title", "Subjects", ""]}>
+      {academicPrograms.map((program) => (
+        <tr key={program.id} className="transition-colors hover:bg-slate-50/60">
+          <td className="px-5 py-3.5 text-sm font-semibold text-foreground whitespace-nowrap">
+            {locale === "km" ? program.grade.km : program.grade.en}
+          </td>
+          <td className="px-5 py-3.5">
+            <p className="text-sm font-medium text-foreground">
+              {locale === "km" ? program.title.km : program.title.en}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+              {locale === "km" ? program.description.km : program.description.en}
+            </p>
+          </td>
+          <td className="px-5 py-3.5">
+            <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+              {program.subjects.length} {locale === "km" ? "មុខវិជ្ជា" : "Subjects"}
+            </span>
+          </td>
+          <td className="px-5 py-3.5 text-right">
+            <ActionButtons />
+          </td>
+        </tr>
+      ))}
+    </TableShell>
   );
 }

@@ -20,10 +20,15 @@ import {
   GraduationCap as Logo,
   Search,
   Info,
+  BookOpen,
+  BookMarked,
+  Library,
+  ShieldCheck,
+  UserCog,
 } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { adminT } from "@/lib/admin-translations";
-import { adminNavItems } from "@/data/admin";
+import { adminNavGroups } from "@/data/admin";
 import { cn } from "@/lib/cn";
 
 const AdminLocaleContext = createContext<Locale>("en");
@@ -42,6 +47,12 @@ const navIcons: Record<string, React.ElementType> = {
   gallery: Images,
   pages: FileText,
   settings: SettingsIcon,
+  academics: BookOpen,
+  classes: BookMarked,
+  subjects: Library,
+  timetable: CalendarDays,
+  roles: ShieldCheck,
+  users: UserCog,
 };
 
 function AdminSidebar({
@@ -58,65 +69,76 @@ function AdminSidebar({
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-black text-white transition-transform duration-300 lg:translate-x-0 font-notosans",
+        "fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-white border-r border-border text-foreground transition-transform duration-300 lg:translate-x-0 font-sans",
         open ? "translate-x-0" : "-translate-x-full",
       )}
       aria-label={adminT(locale, "admin")}
     >
-      <div className="flex h-16 items-center gap-3 border-b border-white/10 px-5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black">
+      <div className="flex h-16 items-center gap-3 border-b border-border px-5">
+        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-black text-white">
           <Logo className="h-5 w-5" aria-hidden="true" />
         </span>
-        <span className="font-notosans text-sm font-bold leading-tight">
+        <span className="font-sans text-sm font-bold leading-tight">
           {locale === "km" ? "វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច" : "Hun Sen Kampong Tralach"}
         </span>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close menu"
-          className="ml-auto flex h-8 w-8 items-center justify-center rounded-full text-white/70 hover:bg-white/10 lg:hidden"
+          className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-slate-100 lg:hidden"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
 
       <nav className="flex-1 overflow-y-auto p-3" aria-label={adminT(locale, "admin")}>
-        <ul className="space-y-1">
-          {adminNavItems.map((item) => {
-            const Icon = navIcons[item.key];
-            const active = pathname === item.href;
-            return (
-              <li key={item.key}>
-                <Link
-                  href={item.href}
-                  onClick={onClose}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
-                    active ? "bg-white text-black" : "text-white/75 hover:bg-white/10 hover:text-white",
-                    locale === "km" && "text-[15px]",
-                  )}
-                >
-                  <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                  {locale === "km" ? item.label.km : item.label.en}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="space-y-6">
+          {adminNavGroups.map((group, i) => (
+            <div key={i}>
+              {group.label && (
+                <h4 className="mb-2 px-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  {locale === "km" ? group.label.km : group.label.en}
+                </h4>
+              )}
+              <ul className="space-y-1">
+                {group.items.map((item) => {
+                  const Icon = navIcons[item.key];
+                  const active = pathname === item.href;
+                  return (
+                    <li key={item.key}>
+                      <Link
+                        href={item.href}
+                        onClick={onClose}
+                        aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
+                          active ? "bg-slate-100 text-black font-semibold" : "text-slate-500 hover:bg-slate-50 hover:text-black",
+                          locale === "km" && "text-[15px]",
+                        )}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        {locale === "km" ? item.label.km : item.label.en}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
       </nav>
 
-      <div className="border-t border-white/10 p-3">
+      <div className="border-t border-border p-3">
         <Link
           href="/en"
-          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/75 transition-colors hover:bg-white/10 hover:text-white"
+          className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-black"
         >
           <ExternalLink className="h-4 w-4" aria-hidden="true" />
           {adminT(locale, "common.viewSite")}
         </Link>
         <button
           type="button"
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/75 transition-colors hover:bg-creeper hover:text-white"
+          className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
           {adminT(locale, "common.logout")}
@@ -142,7 +164,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <AdminLocaleContext.Provider value={locale}>
-      <div className="min-h-screen bg-secondary font-notosans">
+      <div className="min-h-screen bg-secondary font-sans">
         <AdminSidebar
           locale={locale}
           pathname={pathname}
@@ -203,7 +225,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </div>
           </header>
 
-          <main className="p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="w-full p-4 sm:p-6 lg:p-8">{children}</main>
         </div>
       </div>
     </AdminLocaleContext.Provider>

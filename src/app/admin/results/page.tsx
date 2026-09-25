@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminResultsTable } from "@/components/admin/previews";
+import { ResultsManager } from "@/components/admin/ResultsManager";
 
 export const metadata: Metadata = { title: "Admin Results", robots: { index: false } };
 
 export default function AdminResultsPage() {
   return (
     <>
-      <AdminPageHeader titleKey="nav.results" />
-      <AdminResultsTable />
+      <ResultsManager />
     </>
   );
 }

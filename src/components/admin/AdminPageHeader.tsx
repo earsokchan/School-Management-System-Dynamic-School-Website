@@ -16,7 +16,7 @@ export function AdminPageHeader({
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <h1 className="font-notosans text-2xl font-bold text-foreground">{adminT(locale, titleKey)}</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">{adminT(locale, titleKey)}</h1>
         {subtitleKey ? (
           <p className="mt-1 text-sm text-muted-foreground">{adminT(locale, subtitleKey)}</p>
         ) : null}

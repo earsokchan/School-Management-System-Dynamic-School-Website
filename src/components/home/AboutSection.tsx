@@ -18,7 +18,7 @@ export function AboutSection({ locale }: { locale: Locale }) {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal className="relative">
             <div
-              className="absolute -left-6 -top-6 hidden h-full w-full rounded-xl border-2 border-gold sm:block"
+              className="absolute -left-6 -top-6 hidden h-full w-full rounded-2xl border border-border/50 bg-secondary/50 sm:block"
               aria-hidden="true"
             />
             <div className="relative overflow-hidden rounded-xl shadow-lift">
@@ -31,20 +31,20 @@ export function AboutSection({ locale }: { locale: Locale }) {
               />
             </div>
             <div className="absolute -bottom-8 -right-4 flex items-center gap-4 rounded-xl bg-navy p-5 text-white shadow-lift sm:right-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold text-foreground">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-foreground">
                 <CalendarDays className="h-6 w-6" aria-hidden="true" />
               </span>
               <div>
-                <p className="font-khmer text-3xl font-bold text-gold">
+                <p className="font-sans text-3xl font-bold tracking-tight text-white">
                   {formatNumber(19, locale)}
                 </p>
-                <p className="text-xs font-medium text-primary-foreground/70">{t("about.yearsTitle")}</p>
+                <p className="text-xs font-medium text-white/70">{t("about.yearsTitle")}</p>
               </div>
             </div>
           </Reveal>
 
           <Reveal delay={120}>
-            <p className="eyebrow eyebrow-gold">{t("about.eyebrow")}</p>
+            <p className="eyebrow text-muted-foreground">{t("about.eyebrow")}</p>
             <h2
               id="about-title"
               className="section-title mt-3 text-3xl text-foreground sm:text-4xl lg:text-[2.75rem]"
@@ -58,8 +58,8 @@ export function AboutSection({ locale }: { locale: Locale }) {
             <ul className="mt-8 space-y-4">
               {points.map((point) => (
                 <li key={point} className="flex items-center gap-3">
-                  <CheckCircle2 className="h-6 w-6 shrink-0 text-gold" aria-hidden="true" />
-                  <span className="font-semibold text-foreground">{point}</span>
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-foreground" aria-hidden="true" />
+                  <span className="font-medium text-foreground">{point}</span>
                 </li>
               ))}
             </ul>
@@ -81,7 +81,7 @@ export function AboutSection({ locale }: { locale: Locale }) {
               </ButtonLink>
               <a
                 href={`/${locale}/academics`}
-                className="inline-flex items-center gap-2 px-2 py-2 text-sm font-semibold text-creeper transition-colors hover:text-creeper-dark"
+                className="inline-flex items-center gap-2 px-2 py-2 text-sm font-semibold text-foreground transition-colors hover:text-muted-foreground"
               >
                 {t("about.secondaryLink")}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />

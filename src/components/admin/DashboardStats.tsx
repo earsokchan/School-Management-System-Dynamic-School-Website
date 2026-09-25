@@ -15,11 +15,11 @@ const statIcons: Record<string, React.ElementType> = {
 };
 
 const statColors: Record<string, string> = {
-  students: "bg-navy text-gold",
-  teachers: "bg-creeper text-white",
-  news: "bg-emerald-600 text-white",
-  events: "bg-gold text-foreground",
-  gallery: "bg-indigo-500 text-white",
+  students: "bg-[#1D1D1D] text-gold",
+  teachers: "bg-gold text-white",
+  news: "bg-zinc-100 text-zinc-900",
+  events: "bg-[#1D1D1D] text-white",
+  gallery: "bg-zinc-100 text-zinc-900",
 };
 
 export function DashboardStats() {
@@ -39,7 +39,7 @@ export function DashboardStats() {
             <p className="mt-1 text-xs font-medium text-muted-foreground">
               {locale === "km" ? stat.label.km : stat.label.en}
             </p>
-            <p className="mt-2 inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
+            <p className="mt-2 inline-flex rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-600">
               {stat.change}
             </p>
           </div>

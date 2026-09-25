@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Phone, ChevronDown, GraduationCap, MapPin } from "lucide-react";
+import { Search, ChevronDown, GraduationCap } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { getTranslations, type TFunction } from "@/lib/translations";
-import { routePath, contactInfo, type RouteKey } from "@/lib/site";
+import { routePath, type RouteKey } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,15 +58,11 @@ export function Header({ locale }: { locale: Locale }) {
   const pathname = usePathname();
   const nav = buildNav(locale, t);
 
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    // Scroll detection logic removed for Apple-style fixed nav
   }, []);
 
   const primaryNav = nav.slice(0, 5);
@@ -80,47 +76,23 @@ export function Header({ locale }: { locale: Locale }) {
 
   const tabClass = (route: RouteKey) =>
     cn(
-      "relative flex h-[68px] items-center px-3 text-sm font-semibold transition-colors duration-200",
-      locale === "km" && "text-[14px]",
+      "relative flex h-12 items-center px-3 text-xs tracking-wide transition-colors duration-200",
+      locale === "km" && "text-[13px]",
       isActive(route)
-        ? "text-creeper after:absolute after:inset-x-2 after:bottom-0 after:h-[3px] after:rounded-sm after:bg-creeper"
-        : "text-muted-foreground hover:text-foreground",
+        ? "text-foreground font-medium"
+        : "text-muted-foreground hover:text-foreground font-normal",
     );
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
-        scrolled ? "bg-background/80 backdrop-blur-md shadow-sm border-b border-border/50" : "bg-background border-b",
+        "fixed top-0 z-50 w-full transition-all duration-300",
+        "bg-background/70 backdrop-blur-xl border-b border-border/20",
       )}
     >
-      {/* Utility bar */}
-      <div className="hidden bg-primary text-primary-foreground lg:block">
-        <div className="container-site flex h-9 items-center justify-between gap-6 text-xs">
-          <div className="flex items-center gap-5">
-            <span className="flex items-center gap-1.5 opacity-80">
-              <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-              {t("header.tagline")}
-            </span>
-            <a
-              href={`tel:${contactInfo.phones[0].replace(/\s/g, "")}`}
-              className="flex items-center gap-1.5 opacity-80 transition-opacity hover:opacity-100"
-            >
-              <Phone className="h-3.5 w-3.5" aria-hidden="true" />
-              {contactInfo.phones[0]}
-            </a>
-          </div>
-          <Link
-            href={`/${locale}/results`}
-            className="font-semibold transition-opacity hover:opacity-80"
-          >
-            {t("nav.results")}
-          </Link>
-        </div>
-      </div>
-
+      {/* Utility bar removed for Apple-like minimalism */}
       {/* Main bar */}
-      <div className="container-site flex h-[68px] items-center justify-between gap-4">
+      <div className="container-site flex h-12 items-center justify-between gap-4">
         <SchoolLogo locale={locale} href={`/${locale}`} />
 
         {/* Desktop nav */}
