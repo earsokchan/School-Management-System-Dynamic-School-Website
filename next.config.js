@@ -3,7 +3,7 @@ const isGithubActions = process.env.GITHUB_ACTIONS || false;
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
+  output: isGithubActions ? 'export' : undefined,
   basePath: isGithubActions ? '/Hun-Sen-Kompong-Tralach-High-School' : '',
   images: {
     unoptimized: true,
