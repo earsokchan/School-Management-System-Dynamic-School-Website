@@ -38,7 +38,7 @@
 - 📖 **Open source** — MIT licensed; free to use, fork, and customize.
 
 ---
-
+ 
 ## 🧩 Use This as a Framework for Your School
 
 This project is designed to be **forked and adapted**. To use it for your own school:
