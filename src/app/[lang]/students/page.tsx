@@ -9,6 +9,9 @@ import { StudentLife } from "@/components/home/StudentLife";
 import { StudentResults } from "@/components/home/StudentResults";
 import { GallerySection } from "@/components/home/GallerySection";
 import { CTASection } from "@/components/home/CTASection";
+import { getPublicGallery, getPublicResults } from "@/lib/server/public-content";
+
+export const revalidate = 60;
 
 interface StudentsPageProps {
   params: Promise<{ lang: string }>;
@@ -32,6 +35,10 @@ export default async function StudentsPage({ params }: StudentsPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const [galleryItems, resultItems] = await Promise.all([
+    getPublicGallery(),
+    getPublicResults(),
+  ]);
 
   return (
     <>
@@ -43,8 +50,8 @@ export default async function StudentsPage({ params }: StudentsPageProps) {
         image="/images/students/sports.svg"
       />
       <StudentLife locale={locale} />
-      <StudentResults locale={locale} />
-      <GallerySection locale={locale} />
+      <StudentResults locale={locale} items={resultItems} />
+      <GallerySection locale={locale} items={galleryItems} />
       <CTASection locale={locale} />
     </>
   );

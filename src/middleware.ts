@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { localeList, type Locale } from "@/lib/i18n";
 
 const LOCALE_COOKIE = "hskth_locale";
+const ADMIN_COOKIE = "hskth_admin_session";
 
 function detectLocale(request: NextRequest): Locale {
   const cookie = request.cookies.get(LOCALE_COOKIE)?.value;
@@ -23,6 +24,11 @@ export function middleware(request: NextRequest) {
   );
 
   if (pathname.startsWith("/admin")) {
+    if (pathname !== "/admin/login" && !request.cookies.get(ADMIN_COOKIE)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
     return NextResponse.next();
   }
 

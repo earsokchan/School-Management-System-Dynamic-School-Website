@@ -6,12 +6,14 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { events } from "@/data/events";
+import { getPublicEvents } from "@/lib/server/public-content";
 import { formatDate, formatDay, formatMonthShort } from "@/lib/format";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { CTASection } from "@/components/home/CTASection";
+
+export const revalidate = 60;
 
 interface EventsPageProps {
   params: Promise<{ lang: string }>;
@@ -35,6 +37,7 @@ export default async function EventsPage({ params }: EventsPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const eventItems = await getPublicEvents();
 
   return (
     <>
@@ -49,7 +52,7 @@ export default async function EventsPage({ params }: EventsPageProps) {
       <section className="py-20 sm:py-28">
         <Container>
           <div className="grid gap-8 lg:grid-cols-2">
-            {events.map((event, index) => (
+            {eventItems.map((event, index) => (
               <Reveal key={event.id} delay={(index % 2) * 90}>
                 <article
                   id={event.id}

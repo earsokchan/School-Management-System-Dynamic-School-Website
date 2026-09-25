@@ -5,7 +5,7 @@ import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
-import { gallery, galleryCategories } from "@/data/gallery";
+import { galleryCategories } from "@/data/gallery";
 import type { GalleryItem } from "@/data/types";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -14,14 +14,14 @@ import { cn } from "@/lib/cn";
 
 type Category = GalleryItem["category"];
 
-export function GallerySection({ locale }: { locale: Locale }) {
+export function GallerySection({ locale, items }: { locale: Locale; items: GalleryItem[] }) {
   const { t } = getTranslations(locale);
   const [active, setActive] = useState<Category>("all");
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  const items = useMemo(
-    () => (active === "all" ? gallery : gallery.filter((item) => item.category === active)),
-    [active],
+  const visibleItems = useMemo(
+    () => (active === "all" ? items : items.filter((item) => item.category === active)),
+    [active, items],
   );
 
   const closeLightbox = useCallback(() => setLightbox(null), []);
@@ -31,10 +31,10 @@ export function GallerySection({ locale }: { locale: Locale }) {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeLightbox();
       if (event.key === "ArrowLeft") {
-        setLightbox((current) => (current === null ? null : (current - 1 + items.length) % items.length));
+        setLightbox((current) => (current === null ? null : (current - 1 + visibleItems.length) % visibleItems.length));
       }
       if (event.key === "ArrowRight") {
-        setLightbox((current) => (current === null ? null : (current + 1) % items.length));
+        setLightbox((current) => (current === null ? null : (current + 1) % visibleItems.length));
       }
     };
     document.addEventListener("keydown", onKey);
@@ -43,7 +43,7 @@ export function GallerySection({ locale }: { locale: Locale }) {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [lightbox, items.length, closeLightbox]);
+  }, [lightbox, visibleItems.length, closeLightbox]);
 
   return (
     <section className="bg-secondary py-20 sm:py-28" aria-labelledby="gallery-title">
@@ -82,12 +82,12 @@ export function GallerySection({ locale }: { locale: Locale }) {
         </Reveal>
 
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {items.map((item, index) => (
+          {visibleItems.map((item, index) => (
             <Reveal key={item.id} delay={(index % 4) * 70}>
               <button
                 type="button"
                 onClick={() => setLightbox(index)}
-                aria-label={`${locale === "km" ? item.title.km : item.title.en} — ${index + 1} ${t("gallery.of")} ${items.length}`}
+                aria-label={`${locale === "km" ? item.title.km : item.title.en} — ${index + 1} ${t("gallery.of")} ${visibleItems.length}`}
                 className="group relative block aspect-[4/3] w-full overflow-hidden rounded-xl shadow-card focus-visible:ring-4 focus-visible:ring-gold/50"
               >
                 <Image
@@ -110,16 +110,16 @@ export function GallerySection({ locale }: { locale: Locale }) {
           ))}
         </div>
 
-        {items.length === 0 ? (
+        {visibleItems.length === 0 ? (
           <p className="mt-10 text-center text-sm text-muted-foreground">{t("gallery.empty")}</p>
         ) : null}
       </Container>
 
-      {lightbox !== null && items[lightbox] ? (
+      {lightbox !== null && visibleItems[lightbox] ? (
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={`${locale === "km" ? items[lightbox].title.km : items[lightbox].title.en}`}
+          aria-label={`${locale === "km" ? visibleItems[lightbox].title.km : visibleItems[lightbox].title.en}`}
           className="fixed inset-0 z-[70] flex items-center justify-center bg-navy/95 p-4 sm:p-8"
         >
           <button
@@ -134,7 +134,7 @@ export function GallerySection({ locale }: { locale: Locale }) {
           <button
             type="button"
             onClick={() =>
-              setLightbox((lightbox - 1 + items.length) % items.length)
+              setLightbox((lightbox - 1 + visibleItems.length) % visibleItems.length)
             }
             aria-label={t("gallery.prev")}
             className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:left-6"
@@ -145,8 +145,8 @@ export function GallerySection({ locale }: { locale: Locale }) {
           <figure className="max-h-full max-w-5xl text-center">
             <div className="relative h-[45vh] w-[85vw] overflow-hidden rounded-xl sm:h-[60vh] sm:w-[70vw]">
               <Image
-                src={items[lightbox].image}
-                alt={locale === "km" ? items[lightbox].title.km : items[lightbox].title.en}
+                src={visibleItems[lightbox].image}
+                alt={locale === "km" ? visibleItems[lightbox].title.km : visibleItems[lightbox].title.en}
                 fill
                 sizes="70vw"
                 className="object-contain"
@@ -154,17 +154,17 @@ export function GallerySection({ locale }: { locale: Locale }) {
             </div>
             <figcaption className="mt-4">
               <p className="text-lg font-bold text-white">
-                {locale === "km" ? items[lightbox].title.km : items[lightbox].title.en}
+                {locale === "km" ? visibleItems[lightbox].title.km : visibleItems[lightbox].title.en}
               </p>
               <p className="mt-1 text-sm text-primary-foreground/70">
-                {lightbox + 1} {t("gallery.of")} {items.length}
+                {lightbox + 1} {t("gallery.of")} {visibleItems.length}
               </p>
             </figcaption>
           </figure>
 
           <button
             type="button"
-            onClick={() => setLightbox((lightbox + 1) % items.length)}
+            onClick={() => setLightbox((lightbox + 1) % visibleItems.length)}
             aria-label={t("gallery.next")}
             className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:right-6"
           >

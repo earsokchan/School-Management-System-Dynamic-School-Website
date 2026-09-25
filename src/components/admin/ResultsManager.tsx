@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { useCollection } from "@/hooks/use-collection";
 
 interface SubjectResult {
   subject: string;
   score: string;
 }
 
-interface ResultItem {
+export interface ResultItem {
   id: string;
   studentId: string;
   studentName: string;
@@ -53,9 +54,13 @@ const AVAILABLE_SUBJECTS = [
   "Information Technology", "Physical Education"
 ];
 
-export function ResultsManager() {
+export function ResultsManager({ initialData = mockResults }: { initialData?: ResultItem[] }) {
   const locale = useAdminLocale();
-  const [resultsList, setResultsList] = useState<ResultItem[]>(mockResults);
+  const { items: resultsList, create, update, remove } = useCollection<ResultItem>(
+    "admin-results",
+    initialData,
+    { loadOnMount: false },
+  );
   const [searchQuery, setSearchQuery] = useState("");
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -105,28 +110,29 @@ export function ResultsManager() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this result record?")) return;
-    setResultsList(resultsList.filter((r) => r.id !== id));
+    try {
+      await remove(id);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to delete result");
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.studentId || !formData.studentName) return;
 
-    if (editingResult) {
-      setResultsList(
-        resultsList.map(r => r.id === editingResult.id ? { ...r, ...formData } : r)
-      );
-    } else {
-      const newResult: ResultItem = {
-        id: Date.now().toString(),
-        ...formData
-      };
-      setResultsList([...resultsList, newResult]);
+    try {
+      if (editingResult) {
+        await update(editingResult.id, formData);
+      } else {
+        await create(formData);
+      }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save result");
     }
-    
-    setIsModalOpen(false);
   };
 
   const addSubjectRow = () => {

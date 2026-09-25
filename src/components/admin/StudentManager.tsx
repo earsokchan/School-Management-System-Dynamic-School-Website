@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { uploadImage, useCollection } from "@/hooks/use-collection";
 
 export type StudentType = "Technology" | "Society";
 
@@ -44,10 +45,15 @@ const mockStudents: Student[] = [
   },
 ];
 
-export function StudentManager() {
+export function StudentManager({ initialData = mockStudents }: { initialData?: Student[] }) {
   const locale = useAdminLocale();
-  const [students, setStudents] = useState<Student[]>(mockStudents);
+  const { items: students, create, update, remove } = useCollection<Student>(
+    "admin-students",
+    initialData,
+    { loadOnMount: false },
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   const [formData, setFormData] = useState<Partial<Student>>({
@@ -80,29 +86,46 @@ export function StudentManager() {
     setIsModalOpen(true);
   };
 
-  const deleteStudent = (id: string) => {
+  const deleteStudent = async (id: string) => {
     if (confirm("Are you sure you want to delete this student?")) {
-      setStudents(students.filter((s) => s.id !== id));
+      try {
+        await remove(id);
+      } catch (requestError) {
+        window.alert(requestError instanceof Error ? requestError.message : "Unable to delete student");
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingStudent) {
-      setStudents(
-        students.map((s) =>
-          s.id === editingStudent.id ? { ...s, ...formData } as Student : s
-        )
-      );
-    } else {
-      const newStudent: Student = {
-        ...(formData as Student),
-        id: Date.now().toString(),
-        studentId: Math.floor(1000000 + Math.random() * 9000000).toString(),
-      };
-      setStudents([newStudent, ...students]);
+    try {
+      if (editingStudent) {
+        await update(editingStudent.id, formData);
+      } else {
+        await create({
+          ...(formData as Student),
+          studentId: Math.floor(1000000 + Math.random() * 9000000).toString(),
+        });
+      }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save student");
     }
-    setIsModalOpen(false);
+  };
+
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const uploaded = await uploadImage(file, "students");
+      setFormData((current) => ({ ...current, photo: uploaded.url }));
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to upload image");
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
   };
 
   return (
@@ -231,6 +254,15 @@ export function StudentManager() {
                     onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
                     className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
                   />
+                  <label className="mt-3 block text-xs font-semibold text-muted-foreground">Upload to Blob</label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                    disabled={uploading}
+                    onChange={handlePhotoUpload}
+                    className="mt-1 block w-full text-xs text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white"
+                  />
+                  {uploading ? <p className="mt-1 text-xs text-muted-foreground">Uploading image…</p> : null}
                 </div>
               </div>
 

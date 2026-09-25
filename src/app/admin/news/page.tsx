@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminNewsTable } from "@/components/admin/previews";
+import { NewsManager } from "@/components/admin/NewsManager";
+import { getAdminCollection } from "@/lib/server/admin-content";
+import type { NewsItem } from "@/data/types";
 
 export const metadata: Metadata = { title: "Admin News", robots: { index: false } };
 
-export default function AdminNewsPage() {
-  return (
-    <>
-      <AdminPageHeader titleKey="nav.news" />
-      <AdminNewsTable />
-    </>
-  );
+export default async function AdminNewsPage() {
+  const initialData = await getAdminCollection<NewsItem>("news");
+  return <NewsManager initialData={initialData} />;
 }

@@ -138,6 +138,11 @@ function AdminSidebar({
         </Link>
         <button
           type="button"
+          onClick={() => {
+            void fetch("/api/auth/logout", { method: "POST" }).finally(() => {
+              window.location.href = "/admin/login";
+            });
+          }}
           className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
@@ -161,6 +166,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     window.localStorage.setItem("hskth_admin_locale", locale);
   }, [locale]);
+
+  if (pathname === "/admin/login") {
+    return <div className="min-h-screen bg-secondary font-sans">{children}</div>;
+  }
 
   return (
     <AdminLocaleContext.Provider value={locale}>

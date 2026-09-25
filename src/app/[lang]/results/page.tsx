@@ -6,6 +6,9 @@ import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
 import { PageHero } from "@/components/ui/PageHero";
 import { StudentResults } from "@/components/home/StudentResults";
+import { getPublicResults } from "@/lib/server/public-content";
+
+export const revalidate = 60;
 
 interface ResultsPageProps {
   params: Promise<{ lang: string }>;
@@ -29,6 +32,7 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const resultItems = await getPublicResults();
 
   return (
     <>
@@ -39,7 +43,7 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
         description={t("results.description")}
         image="/images/academics/grade-12.svg"
       />
-      <StudentResults locale={locale} />
+      <StudentResults locale={locale} items={resultItems} />
     </>
   );
 }

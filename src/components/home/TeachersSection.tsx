@@ -2,15 +2,15 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
-import { teachers } from "@/data/teachers";
+import type { Teacher } from "@/data/types";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 
-export function TeachersSection({ locale }: { locale: Locale }) {
+export function TeachersSection({ locale, items }: { locale: Locale; items: Teacher[] }) {
   const { t } = getTranslations(locale);
-  const featured = teachers.slice(0, 4);
+  const featured = items.slice(0, 4);
 
   return (
     <section className="bg-secondary py-20 sm:py-28" aria-labelledby="teachers-title">

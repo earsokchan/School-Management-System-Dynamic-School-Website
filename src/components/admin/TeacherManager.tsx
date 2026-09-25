@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { uploadImage, useCollection } from "@/hooks/use-collection";
 
 export interface Teacher {
   id: string;
@@ -56,10 +57,15 @@ const AVAILABLE_SUBJECTS = [
 const AVAILABLE_CLASSES = ["10A", "10B", "10C", "11A", "11B", "11C", "12A", "12B", "12C"];
 const AVAILABLE_GRADES = ["10", "11", "12"];
 
-export function TeacherManager() {
+export function TeacherManager({ initialData = mockTeachers }: { initialData?: Teacher[] }) {
   const locale = useAdminLocale();
-  const [teachers, setTeachers] = useState<Teacher[]>(mockTeachers);
+  const { items: teachers, create, update, remove } = useCollection<Teacher>(
+    "admin-teachers",
+    initialData,
+    { loadOnMount: false },
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
 
   const [formData, setFormData] = useState<Partial<Teacher>>({
@@ -90,29 +96,46 @@ export function TeacherManager() {
     setIsModalOpen(true);
   };
 
-  const deleteTeacher = (id: string) => {
+  const deleteTeacher = async (id: string) => {
     if (confirm("Are you sure you want to delete this teacher?")) {
-      setTeachers(teachers.filter((t) => t.id !== id));
+      try {
+        await remove(id);
+      } catch (requestError) {
+        window.alert(requestError instanceof Error ? requestError.message : "Unable to delete teacher");
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingTeacher) {
-      setTeachers(
-        teachers.map((t) =>
-          t.id === editingTeacher.id ? ({ ...t, ...formData } as Teacher) : t
-        )
-      );
-    } else {
-      const newTeacher: Teacher = {
-        ...(formData as Teacher),
-        id: Date.now().toString(),
-        teacherId: `T${Math.floor(100000 + Math.random() * 900000)}`,
-      };
-      setTeachers([newTeacher, ...teachers]);
+    try {
+      if (editingTeacher) {
+        await update(editingTeacher.id, formData);
+      } else {
+        await create({
+          ...(formData as Teacher),
+          teacherId: `T${Math.floor(100000 + Math.random() * 900000)}`,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save teacher");
     }
-    setIsModalOpen(false);
+  };
+
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const uploaded = await uploadImage(file, "teachers");
+      setFormData((current) => ({ ...current, photo: uploaded.url }));
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to upload image");
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
   };
 
   const toggleArrayItem = (field: "subjects" | "classes" | "grades", value: string) => {
@@ -259,6 +282,15 @@ export function TeacherManager() {
                       className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
                     />
                   </div>
+                  <label className="mt-3 block text-xs font-semibold text-muted-foreground">Upload to Blob</label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                    disabled={uploading}
+                    onChange={handlePhotoUpload}
+                    className="mt-1 block w-full text-xs text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white"
+                  />
+                  {uploading ? <p className="mt-1 text-xs text-muted-foreground">Uploading image…</p> : null}
                 </div>
 
               <div className="grid grid-cols-2 gap-4">

@@ -5,7 +5,8 @@ import { Search, Info, ShieldCheck } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { toKhmerNumerals } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
-import { academicYears, getStudentResults } from "@/data/results";
+import { academicYears, studentResults } from "@/data/results";
+import type { StudentResult } from "@/data/types";
 import { formatScore } from "@/lib/format";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -33,7 +34,7 @@ import {
 
 const YEARS: number[] = Array.from({ length: 40 }, (_, i) => 2040 - i);
 
-export function StudentResults({ locale }: { locale: Locale }) {
+export function StudentResults({ locale, items = studentResults }: { locale: Locale; items?: StudentResult[] }) {
   const { t } = getTranslations(locale);
   const [year, setYear] = useState(academicYears[0]);
   const [evaluation, setEvaluation] = useState("1");
@@ -49,16 +50,18 @@ export function StudentResults({ locale }: { locale: Locale }) {
     return { a, b };
   }
 
-  const rows = useMemo(
-    () =>
-      getStudentResults({
-        academicYear: year,
-        grade: "",
-        className: "",
-        query: studentId.trim(),
-      }),
-    [year, studentId],
-  );
+  const rows = useMemo(() => {
+    const query = studentId.trim().toLowerCase();
+    return items.filter((row) => {
+      const matchesYear = !year || row.academicYear === year;
+      const matchesQuery =
+        !query ||
+        row.id.toLowerCase().includes(query) ||
+        row.name.en.toLowerCase().includes(query) ||
+        row.name.km.toLowerCase().includes(query);
+      return matchesYear && matchesQuery;
+    });
+  }, [items, year, studentId]);
 
   const captchaValid =
     captchaResult.trim() !== "" &&

@@ -3,17 +3,17 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
-import { news } from "@/data/news";
+import type { NewsItem } from "@/data/types";
 import { formatDateShort } from "@/lib/format";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 
-export function NewsSection({ locale }: { locale: Locale }) {
+export function NewsSection({ locale, items }: { locale: Locale; items: NewsItem[] }) {
   const { t } = getTranslations(locale);
-  const featured = news.filter((item) => item.featured)[0] ?? news[0];
-  const rest = news.filter((item) => item.id !== featured.id).slice(0, 4);
+  const featured = items.filter((item) => item.featured)[0] ?? items[0];
+  const rest = items.filter((item) => item.id !== featured.id).slice(0, 4);
 
   return (
     <section className="bg-secondary py-20 sm:py-28" aria-labelledby="news-title">

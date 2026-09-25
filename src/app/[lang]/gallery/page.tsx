@@ -5,7 +5,10 @@ import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
 import { PageHero } from "@/components/ui/PageHero";
+import { getPublicGallery } from "@/lib/server/public-content";
 import { GallerySection } from "@/components/home/GallerySection";
+
+export const revalidate = 60;
 
 interface GalleryPageProps {
   params: Promise<{ lang: string }>;
@@ -29,6 +32,7 @@ export default async function GalleryPage({ params }: GalleryPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const galleryItems = await getPublicGallery();
 
   return (
     <>
@@ -39,7 +43,7 @@ export default async function GalleryPage({ params }: GalleryPageProps) {
         description={t("gallery.description")}
         image="/images/gallery/g-1.svg"
       />
-      <GallerySection locale={locale} />
+      <GallerySection locale={locale} items={galleryItems} />
     </>
   );
 }

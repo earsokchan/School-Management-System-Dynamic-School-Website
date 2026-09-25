@@ -5,11 +5,13 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { teachers } from "@/data/teachers";
+import { getPublicTeachers } from "@/lib/server/public-content";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { CTASection } from "@/components/home/CTASection";
+
+export const revalidate = 60;
 
 interface TeachersPageProps {
   params: Promise<{ lang: string }>;
@@ -33,6 +35,7 @@ export default async function TeachersPage({ params }: TeachersPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const teacherItems = await getPublicTeachers();
 
   return (
     <>
@@ -47,7 +50,7 @@ export default async function TeachersPage({ params }: TeachersPageProps) {
       <section className="py-20 sm:py-28">
         <Container>
           <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-            {teachers.map((teacher, index) => (
+            {teacherItems.map((teacher, index) => (
               <Reveal key={teacher.id} delay={(index % 4) * 80}>
                 <article className="group text-center">
                   <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-full ring-4 ring-border shadow-card transition-transform duration-300 group-hover:scale-105 sm:h-52 sm:w-52">

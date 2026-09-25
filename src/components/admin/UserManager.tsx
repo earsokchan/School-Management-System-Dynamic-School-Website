@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, X, Pencil, Trash2, Key, Shield } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { useCollection } from "@/hooks/use-collection";
 import Image from "next/image";
 
 const AVAILABLE_TEACHERS = [
@@ -15,7 +16,7 @@ const AVAILABLE_TEACHERS = [
 
 const AVAILABLE_ROLES = ["Owner", "Admin", "Teacher"];
 
-interface SystemUser {
+export interface SystemUser {
   id: string;
   teacherId: string;
   name: string;
@@ -46,9 +47,13 @@ const mockUsers: SystemUser[] = [
   }
 ];
 
-export function UserManager() {
+export function UserManager({ initialData = mockUsers }: { initialData?: SystemUser[] }) {
   const locale = useAdminLocale();
-  const [users, setUsers] = useState<SystemUser[]>(mockUsers);
+  const { items: users, create, update, remove } = useCollection<SystemUser>(
+    "users",
+    initialData,
+    { loadOnMount: false },
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<SystemUser | null>(null);
 
@@ -75,47 +80,46 @@ export function UserManager() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to remove this user's access?")) {
-      setUsers(users.filter(u => u.id !== id));
+      try {
+        await remove(id);
+      } catch (requestError) {
+        window.alert(requestError instanceof Error ? requestError.message : "Unable to delete user");
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Only check password matching if it's a new user OR if they typed a new password to change it
     if ((!editingUser || formData.password) && formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match!");
       return;
     }
     setPasswordError("");
 
-    const selectedTeacher = AVAILABLE_TEACHERS.find(t => t.id === formData.teacherId);
+    const selectedTeacher = AVAILABLE_TEACHERS.find((teacher) => teacher.id === formData.teacherId);
     if (!selectedTeacher) return;
 
-    if (editingUser) {
-      setUsers(users.map(u => u.id === editingUser.id ? {
-        ...u,
-        teacherId: formData.teacherId,
-        name: selectedTeacher.name,
-        photo: selectedTeacher.photo,
-        username: formData.username,
-        role: formData.role,
-      } : u));
-    } else {
-      const newUser: SystemUser = {
-        id: Date.now().toString(),
-        teacherId: formData.teacherId,
-        name: selectedTeacher.name,
-        photo: selectedTeacher.photo,
-        username: formData.username,
-        role: formData.role,
-        status: "Active"
-      };
-      setUsers([newUser, ...users]);
+    const value = {
+      teacherId: formData.teacherId,
+      name: selectedTeacher.name,
+      photo: selectedTeacher.photo,
+      username: formData.username,
+      role: formData.role,
+      ...(editingUser ? {} : { status: "Active" as const }),
+    };
+
+    try {
+      if (editingUser) {
+        await update(editingUser.id, value);
+      } else {
+        await create(value);
+      }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save user");
     }
-    setIsModalOpen(false);
   };
 
   return (

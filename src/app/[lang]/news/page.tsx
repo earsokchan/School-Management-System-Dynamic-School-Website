@@ -6,12 +6,14 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { news } from "@/data/news";
+import { getPublicNews } from "@/lib/server/public-content";
 import { formatDate } from "@/lib/format";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { CTASection } from "@/components/home/CTASection";
+
+export const revalidate = 60;
 
 interface NewsPageProps {
   params: Promise<{ lang: string }>;
@@ -35,8 +37,9 @@ export default async function NewsPage({ params }: NewsPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const newsItems = await getPublicNews();
 
-  const [featured, ...rest] = news;
+  const [featured, ...rest] = newsItems;
 
   return (
     <>
@@ -129,7 +132,7 @@ export default async function NewsPage({ params }: NewsPageProps) {
             </div>
           ) : null}
 
-          {news.length === 0 ? (
+          {newsItems.length === 0 ? (
             <p className="py-16 text-center text-muted-foreground">{t("news.empty")}</p>
           ) : null}
         </Container>

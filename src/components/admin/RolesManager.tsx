@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X, Shield, Pencil, Trash2, CheckCircle2 } from "lucide-react";
+import { Plus, X, Shield, Trash2, CheckCircle2 } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { useCollection } from "@/hooks/use-collection";
 
 const PERMISSION_GROUPS = [
   {
@@ -36,11 +37,11 @@ const PERMISSION_GROUPS = [
   }
 ];
 
-interface Role {
+export interface Role {
   id: string;
   name: string;
   description: string;
-  isSystem: boolean; // Cannot be deleted
+  isSystem: boolean;
   usersCount: number;
   permissions: string[];
 }
@@ -77,9 +78,13 @@ const mockRoles: Role[] = [
   }
 ];
 
-export function RolesManager() {
+export function RolesManager({ initialData = mockRoles }: { initialData?: Role[] }) {
   const locale = useAdminLocale();
-  const [roles, setRoles] = useState<Role[]>(mockRoles);
+  const { items: roles, create, update, remove } = useCollection<Role>(
+    "roles",
+    initialData,
+    { loadOnMount: false },
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
 
@@ -105,9 +110,13 @@ export function RolesManager() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this role?")) {
-      setRoles(roles.filter(r => r.id !== id));
+      try {
+        await remove(id);
+      } catch (requestError) {
+        window.alert(requestError instanceof Error ? requestError.message : "Unable to delete role");
+      }
     }
   };
 
@@ -120,21 +129,25 @@ export function RolesManager() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingRole) {
-      setRoles(roles.map(r => r.id === editingRole.id ? { ...r, ...formData } : r));
-    } else {
-      setRoles([...roles, {
-        id: formData.name.toLowerCase().replace(/\s+/g, '_'),
-        name: formData.name,
-        description: formData.description,
-        permissions: formData.permissions,
-        isSystem: false,
-        usersCount: 0
-      }]);
+    try {
+      if (editingRole) {
+        await update(editingRole.id, formData);
+      } else {
+        await create({
+          id: formData.name.toLowerCase().replace(/\s+/g, "_"),
+          name: formData.name,
+          description: formData.description,
+          permissions: formData.permissions,
+          isSystem: false,
+          usersCount: 0,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save role");
     }
-    setIsModalOpen(false);
   };
 
   return (

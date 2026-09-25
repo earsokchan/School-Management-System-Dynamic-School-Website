@@ -2,13 +2,13 @@ import Image from "next/image";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
-import { academicPrograms } from "@/data/programs";
+import type { AcademicProgram } from "@/data/types";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 
-export function AcademicPrograms({ locale }: { locale: Locale }) {
+export function AcademicPrograms({ locale, items }: { locale: Locale; items: AcademicProgram[] }) {
   const { t } = getTranslations(locale);
 
   return (
@@ -24,7 +24,7 @@ export function AcademicPrograms({ locale }: { locale: Locale }) {
         </div>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {academicPrograms.map((program, index) => (
+          {items.map((program, index) => (
             <Reveal key={program.id} delay={(index % 3) * 90}>
               <a
                 href={`/${locale}/academics#${program.id}`}

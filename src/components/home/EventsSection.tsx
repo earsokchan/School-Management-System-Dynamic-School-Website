@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Clock, MapPin } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
-import { events } from "@/data/events";
+import type { SchoolEvent } from "@/data/types";
 import { formatDay, formatMonthShort } from "@/lib/format";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -11,9 +11,9 @@ import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { cn } from "@/lib/cn";
 
-export function EventsSection({ locale }: { locale: Locale }) {
+export function EventsSection({ locale, items }: { locale: Locale; items: SchoolEvent[] }) {
   const { t } = getTranslations(locale);
-  const upcoming = events.slice(0, 3);
+  const upcoming = items.slice(0, 3);
 
   return (
     <section className="py-20 sm:py-28" aria-labelledby="events-title">

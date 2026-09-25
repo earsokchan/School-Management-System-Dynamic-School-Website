@@ -1,16 +1,20 @@
-const isGithubActions = process.env.GITHUB_ACTIONS || false;
-
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: isGithubActions ? 'export' : undefined,
-  basePath: isGithubActions ? '/Hun-Sen-Kompong-Tralach-High-School' : '',
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '11mb',
+    },
+  },
   images: {
     unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
       },
     ],
   },

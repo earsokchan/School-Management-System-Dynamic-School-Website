@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Plus, Trash2, Pencil, X } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { useCollection } from "@/hooks/use-collection";
 
-interface Subject {
+export interface Subject {
   id: string;
   name: string;
   grades: string[];
@@ -19,9 +20,13 @@ const mockSubjects: Subject[] = [
 
 const AVAILABLE_GRADES = ["10", "11", "12"];
 
-export function SubjectsManager() {
+export function SubjectsManager({ initialData = mockSubjects }: { initialData?: Subject[] }) {
   const locale = useAdminLocale();
-  const [subjects, setSubjects] = useState<Subject[]>(mockSubjects);
+  const { items: subjects, create, update, remove } = useCollection<Subject>(
+    "subjects",
+    initialData,
+    { loadOnMount: false },
+  );
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
@@ -43,29 +48,32 @@ export function SubjectsManager() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this subject?")) return;
-    setSubjects(subjects.filter((s) => s.id !== id));
+    try {
+      await remove(id);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to delete subject");
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
-    if (editingSubject) {
-      setSubjects(
-        subjects.map(s => s.id === editingSubject.id ? { ...s, ...formData } : s)
-      );
-    } else {
-      const newSubject: Subject = {
-        id: Date.now().toString(),
-        name: formData.name.trim(),
-        grades: formData.grades
-      };
-      setSubjects([...subjects, newSubject]);
+    try {
+      if (editingSubject) {
+        await update(editingSubject.id, formData);
+      } else {
+        await create({
+          name: formData.name.trim(),
+          grades: formData.grades,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save subject");
     }
-    
-    setIsModalOpen(false);
   };
 
   const toggleGrade = (grade: string) => {

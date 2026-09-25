@@ -3,14 +3,22 @@
 import { useState } from "react";
 import { Plus, Trash2, Pencil, X, GraduationCap } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { useCollection } from "@/hooks/use-collection";
 
-interface ClassItem {
+export interface ClassItem {
   id: string;
   name: string;
   grade: string;
 }
 
+export interface GradeItem {
+  id: string;
+  name: string;
+  type: "grade";
+}
+
 const mockGrades = ["10", "11", "12"];
+const initialGrades: GradeItem[] = mockGrades.map((name) => ({ id: `grade-${name}`, name, type: "grade" }));
 const mockClasses: ClassItem[] = [
   { id: "1", name: "10A", grade: "10" },
   { id: "2", name: "10B", grade: "10" },
@@ -20,11 +28,28 @@ const mockClasses: ClassItem[] = [
   { id: "6", name: "12B", grade: "12" },
 ];
 
-export function ClassesManager() {
+export function ClassesManager({
+  initialClasses = mockClasses,
+  initialGradeItems = initialGrades,
+}: {
+  initialClasses?: ClassItem[];
+  initialGradeItems?: GradeItem[];
+}) {
   const locale = useAdminLocale();
 
-  const [grades, setGrades] = useState<string[]>(mockGrades);
-  const [classes, setClasses] = useState<ClassItem[]>(mockClasses);
+  const { items: classes, create: createClass, remove: removeClass } = useCollection<ClassItem>(
+    "classes",
+    initialClasses,
+    { loadOnMount: false },
+  );
+  const { items: gradeItems, create: createGrade, remove: removeGrade } = useCollection<GradeItem>(
+    "settings",
+    initialGradeItems,
+    { loadOnMount: false },
+  );
+  const grades = Array.from(
+    new Set(gradeItems.filter((grade) => grade.type === "grade").map((grade) => grade.name)),
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"Grade" | "Class" | null>(null);
@@ -60,45 +85,57 @@ export function ClassesManager() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteClassGroup = (gradeString: string) => {
+  const handleDeleteClassGroup = async (gradeString: string) => {
     if (!confirm(`Are you sure you want to delete all classes in Grade ${gradeString}?`)) return;
-    setClasses(classes.filter((c) => c.grade !== gradeString));
+    try {
+      await Promise.all(classes.filter((item) => item.grade === gradeString).map((item) => removeClass(item.id)));
+      const grade = gradeItems.find((item) => item.name === gradeString);
+      if (grade) await removeGrade(grade.id);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to delete grade");
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (modalType === "Grade") {
-      if (!gradeName.trim()) return;
-      if (!grades.includes(gradeName.trim())) {
-        setGrades([...grades, gradeName.trim()]);
-      }
-    } else if (modalType === "Class") {
-      // Allow saving if there are tags, or if there is something in the input
-      const pendingVal = classNameInput.trim().replace(/,/g, "");
-      const allNewClasses = [...classNames];
-      if (pendingVal && !classNames.includes(pendingVal)) {
-        allNewClasses.push(pendingVal);
-      }
-      
-      if (allNewClasses.length === 0 || !selectedGrade) return;
-      
-      const newClassesArray = allNewClasses.map((name, index) => ({
-        id: Date.now().toString() + "-" + index,
-        name,
-        grade: selectedGrade
-      }));
+    try {
+      if (modalType === "Grade") {
+        if (!gradeName.trim() || grades.includes(gradeName.trim())) return;
+        await createGrade({
+          id: `grade-${gradeName.trim()}`,
+          name: gradeName.trim(),
+          type: "grade",
+        });
+      } else if (modalType === "Class") {
+        const pendingValue = classNameInput.trim().replace(/,/g, "");
+        const allNewClasses = [...classNames];
+        if (pendingValue && !classNames.includes(pendingValue)) {
+          allNewClasses.push(pendingValue);
+        }
+        if (allNewClasses.length === 0 || !selectedGrade) return;
 
-      if (editingGradeGroup) {
-        // Remove old classes for this grade and add the new ones
-        const otherClasses = classes.filter(c => c.grade !== editingGradeGroup);
-        setClasses([...otherClasses, ...newClassesArray]);
-      } else {
-        setClasses([...classes, ...newClassesArray]);
+        if (editingGradeGroup) {
+          await Promise.all(
+            classes
+              .filter((item) => item.grade === editingGradeGroup)
+              .map((item) => removeClass(item.id)),
+          );
+        }
+        await Promise.all(
+          allNewClasses.map((name, index) =>
+            createClass({
+              id: `${selectedGrade}-${name}-${Date.now()}-${index}`,
+              name,
+              grade: selectedGrade,
+            }),
+          ),
+        );
       }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save classes");
     }
-    
-    setIsModalOpen(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

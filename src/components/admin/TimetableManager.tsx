@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminShell";
+import { useCollection } from "@/hooks/use-collection";
 
 const DAYS = [
   { id: "Mon", en: "Monday", km: "ច័ន្ទ" },
@@ -45,7 +46,8 @@ const AVAILABLE_TEACHERS = [
   "H1 • មាស សុខា"
 ];
 
-interface TimetableEntry {
+export interface TimetableEntry {
+  id: string;
   classId: string;
   dayId: string;
   slotId: string;
@@ -54,20 +56,24 @@ interface TimetableEntry {
 }
 
 const mockEntries: TimetableEntry[] = [
-  { classId: "12A", dayId: "Mon", slotId: "T1", subject: "Mathematics", teacher: "M1 • នន ប៊ុណ្ណារិទ្ធ" },
-  { classId: "12A", dayId: "Tue", slotId: "T1", subject: "Physics", teacher: "P1 • សុខ សាន" },
-  { classId: "12A", dayId: "Mon", slotId: "T2", subject: "Mathematics", teacher: "M1 • នន ប៊ុណ្ណារិទ្ធ" },
-  { classId: "12A", dayId: "Wed", slotId: "T3", subject: "Khmer", teacher: "K1 • អូន ហេង" },
-  { classId: "12B", dayId: "Thu", slotId: "T1", subject: "Chemistry", teacher: "C1 • ចាន់ តារា" },
-  { classId: "12A", dayId: "Fri", slotId: "T4", subject: "History", teacher: "H1 • មាស សុខា" },
+  { id: "tt-1", classId: "12A", dayId: "Mon", slotId: "T1", subject: "Mathematics", teacher: "M1 • នន ប៊ុណ្ណារិទ្ធ" },
+  { id: "tt-2", classId: "12A", dayId: "Tue", slotId: "T1", subject: "Physics", teacher: "P1 • សុខ សាន" },
+  { id: "tt-3", classId: "12A", dayId: "Mon", slotId: "T2", subject: "Mathematics", teacher: "M1 • នន ប៊ុណ្ណារិទ្ធ" },
+  { id: "tt-4", classId: "12A", dayId: "Wed", slotId: "T3", subject: "Khmer", teacher: "K1 • អូន ហេង" },
+  { id: "tt-5", classId: "12B", dayId: "Thu", slotId: "T1", subject: "Chemistry", teacher: "C1 • ចាន់ តារា" },
+  { id: "tt-6", classId: "12A", dayId: "Fri", slotId: "T4", subject: "History", teacher: "H1 • មាស សុខា" },
 ];
 
-export function TimetableManager() {
+export function TimetableManager({ initialData = mockEntries }: { initialData?: TimetableEntry[] }) {
   const locale = useAdminLocale();
   const [viewMode, setViewMode] = useState<"class" | "teacher">("class");
   const [selectedClass, setSelectedClass] = useState("12A");
   const [selectedTeacher, setSelectedTeacher] = useState("M1 • នន ប៊ុណ្ណារិទ្ធ");
-  const [entries, setEntries] = useState<TimetableEntry[]>(mockEntries);
+  const { items: entries, create, update, remove } = useCollection<TimetableEntry>(
+    "timetable",
+    initialData,
+    { loadOnMount: false },
+  );
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCell, setSelectedCell] = useState<{dayId: string, slotId: string} | null>(null);
@@ -101,42 +107,42 @@ export function TimetableManager() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCell) return;
 
-    const newEntries = entries.filter(e => {
-      if (viewMode === "class") {
-        return !(e.classId === selectedClass && e.dayId === selectedCell.dayId && e.slotId === selectedCell.slotId);
-      } else {
-        return !(e.teacher === selectedTeacher && e.dayId === selectedCell.dayId && e.slotId === selectedCell.slotId);
-      }
-    });
-    
-    if (formData.subject && formData.teacher) {
-      newEntries.push({
-        classId: formData.classId,
-        dayId: selectedCell.dayId,
-        slotId: selectedCell.slotId,
-        subject: formData.subject,
-        teacher: formData.teacher
-      });
-    }
+    const existing = getEntry(selectedCell.dayId, selectedCell.slotId);
+    const value = {
+      classId: formData.classId,
+      dayId: selectedCell.dayId,
+      slotId: selectedCell.slotId,
+      subject: formData.subject,
+      teacher: formData.teacher,
+    };
 
-    setEntries(newEntries);
-    setIsModalOpen(false);
+    if (!value.subject || !value.teacher) return;
+    try {
+      if (existing) {
+        await update(existing.id, value);
+      } else {
+        await create({ id: `tt-${Date.now()}`, ...value });
+      }
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to save schedule");
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedCell) return;
-    setEntries(entries.filter(e => {
-      if (viewMode === "class") {
-        return !(e.classId === selectedClass && e.dayId === selectedCell.dayId && e.slotId === selectedCell.slotId);
-      } else {
-        return !(e.teacher === selectedTeacher && e.dayId === selectedCell.dayId && e.slotId === selectedCell.slotId);
-      }
-    }));
-    setIsModalOpen(false);
+    const existing = getEntry(selectedCell.dayId, selectedCell.slotId);
+    if (!existing) return;
+    try {
+      await remove(existing.id);
+      setIsModalOpen(false);
+    } catch (requestError) {
+      window.alert(requestError instanceof Error ? requestError.message : "Unable to remove schedule");
+    }
   };
 
   return (

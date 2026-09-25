@@ -6,11 +6,13 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { academicPrograms } from "@/data/programs";
+import { getPublicPrograms } from "@/lib/server/public-content";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { CTASection } from "@/components/home/CTASection";
+
+export const revalidate = 60;
 
 interface AcademicsPageProps {
   params: Promise<{ lang: string }>;
@@ -34,6 +36,7 @@ export default async function AcademicsPage({ params }: AcademicsPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const programItems = await getPublicPrograms();
 
   return (
     <>
@@ -48,7 +51,7 @@ export default async function AcademicsPage({ params }: AcademicsPageProps) {
       <section className="py-20 sm:py-28">
         <Container>
           <div className="space-y-16">
-            {academicPrograms.map((program, index) => (
+            {programItems.map((program, index) => (
               <Reveal key={program.id}>
                 <article
                   id={program.id}
