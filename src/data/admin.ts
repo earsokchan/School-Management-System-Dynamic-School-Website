@@ -9,6 +9,7 @@ export const adminNavGroups: { label?: Localized; items: { key: string; label: L
   {
     label: { en: "Content", km: "មាតិកា" },
     items: [
+      { key: "home", label: { en: "Home Page", km: "ទំព័រដើម" }, href: "/admin/pages/home" },
       { key: "news", label: { en: "News", km: "ព័ត៌មាន" }, href: "/admin/news" },
       { key: "events", label: { en: "Events", km: "ព្រឹត្តិការណ៍" }, href: "/admin/events" },
       { key: "academics", label: { en: "Academic Programs", km: "កម្មវិធីសិក្សា" }, href: "/admin/academics" },

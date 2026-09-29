@@ -6,18 +6,27 @@ import { GraduationCap, Presentation, BookOpen, MapPin } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
 const statIcons: LucideIcon[] = [GraduationCap, Presentation, BookOpen, MapPin];
 
-export function StatsSection({ locale }: { locale: Locale }) {
+export function StatsSection({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  // Override static values with DB values if available
+  const dynamicStats = [
+    { ...stats[0], value: hc?.statsStudents ?? stats[0].value },
+    { ...stats[1], value: hc?.statsTeachers ?? stats[1].value },
+    { ...stats[2], value: hc?.statsClassrooms ?? stats[2].value },
+    { ...stats[3], value: hc?.statsEstablished ? Number(hc.statsEstablished) : stats[3].value },
+  ];
 
   return (
     <section id="stats" className="relative -mt-12 z-10 pb-4" aria-label={t("stats.title")}>
       <Container>
         <Reveal>
           <dl className="grid grid-cols-2 gap-[1px] overflow-hidden rounded-2xl border border-border/60 bg-border/40 shadow-sm lg:grid-cols-4">
-            {stats.map((stat, index) => (
+            {dynamicStats.map((stat, index) => (
               <div
                 key={stat.id}
                 className="relative bg-white p-6 sm:p-8"

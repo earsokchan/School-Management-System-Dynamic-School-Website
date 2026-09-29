@@ -25,6 +25,7 @@ import {
   Library,
   ShieldCheck,
   UserCog,
+  Home,
 } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { adminT } from "@/lib/admin-translations";
@@ -39,6 +40,7 @@ export function useAdminLocale(): Locale {
 
 const navIcons: Record<string, React.ElementType> = {
   dashboard: LayoutDashboard,
+  home: Home,
   news: Newspaper,
   events: CalendarDays,
   teachers: Users,
@@ -168,7 +170,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }, [locale]);
 
   if (pathname === "/admin/login") {
-    return <div className="min-h-screen bg-secondary font-sans">{children}</div>;
+    return <div className="min-h-screen font-sans">{children}</div>;
   }
 
   return (
@@ -234,7 +236,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </div>
           </header>
 
-          <main className="w-full p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className={cn(
+            "w-full",
+            pathname === "/admin/pages/home"
+              ? "overflow-hidden p-0"
+              : "p-4 sm:p-6 lg:p-8"
+          )}>{children}</main>
         </div>
       </div>
     </AdminLocaleContext.Provider>

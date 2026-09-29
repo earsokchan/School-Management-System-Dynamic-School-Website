@@ -7,9 +7,13 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function TeachersSection({ locale, items }: { locale: Locale; items: Teacher[] }) {
+export function TeachersSection({ locale, items, homeContent }: { locale: Locale; items: Teacher[]; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const sectionTitle = locale === "km" ? (hc?.teachersTitleKm || t("teachers.title")) : (hc?.teachersTitleEn || t("teachers.title"));
+  const sectionDesc  = locale === "km" ? (hc?.teachersDescKm  || t("teachers.description")) : (hc?.teachersDescEn  || t("teachers.description"));
   const featured = items.slice(0, 4);
 
   return (
@@ -19,8 +23,8 @@ export function TeachersSection({ locale, items }: { locale: Locale; items: Teac
           <SectionHeading
             locale={locale}
             eyebrowKey="teachers.eyebrow"
-            title={t("teachers.title")}
-            description={t("teachers.description")}
+            title={sectionTitle}
+            description={sectionDesc}
           />
           <Reveal className="shrink-0">
             <ButtonLink

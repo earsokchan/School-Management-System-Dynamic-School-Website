@@ -7,6 +7,8 @@ import { teachers } from "@/data/teachers";
 import type { AcademicProgram, GalleryItem, NewsItem, SchoolEvent, StudentResult, Teacher } from "@/data/types";
 import { listCollection, type CollectionName } from "@/lib/server/collections";
 import { hasMongoConfig } from "@/lib/server/env";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
+import { getDatabase } from "@/lib/server/mongodb";
 
 async function getContent<T extends object>(name: CollectionName, fallback: readonly T[]): Promise<T[]> {
   if (!hasMongoConfig()) return [...fallback];
@@ -40,4 +42,18 @@ export function getPublicPrograms(): Promise<AcademicProgram[]> {
 
 export function getPublicResults(): Promise<StudentResult[]> {
   return getContent<StudentResult>("public-results", studentResults);
+}
+
+export async function getHomeContent(): Promise<HomeContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("home-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as HomeContent;
+  } catch {
+    return null;
+  }
 }

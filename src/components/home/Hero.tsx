@@ -6,9 +6,17 @@ import { getTranslations } from "@/lib/translations";
 import { schoolName, royalMotto } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function Hero({ locale }: { locale: Locale }) {
+export function Hero({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const title = locale === "km" ? (hc?.heroTitleKm || schoolName.km) : (hc?.heroTitleEn || "HUN SEN KAMPONG TRALACH");
+  const subtitle = locale === "km" ? (hc?.heroSubtitleKm || t("hero.subtitle")) : (hc?.heroSubtitleEn || "HIGH SCHOOL");
+  const description = locale === "km" ? (hc?.heroDescriptionKm || t("hero.description")) : (hc?.heroDescriptionEn || t("hero.description"));
+  const primaryCta = locale === "km" ? (hc?.heroPrimaryCtaKm || t("hero.primaryCta")) : (hc?.heroPrimaryCtaEn || t("hero.primaryCta"));
+  const secondaryCta = locale === "km" ? (hc?.heroSecondaryCtaKm || t("hero.secondaryCta")) : (hc?.heroSecondaryCtaEn || t("hero.secondaryCta"));
+  const bannerUrl = hc?.heroBannerUrl || "/images/school/banner.jpg";
 
   return (
     <section className="relative isolate overflow-hidden bg-white" aria-labelledby="hero-title">
@@ -43,7 +51,7 @@ export function Hero({ locale }: { locale: Locale }) {
                 : "text-4xl font-extrabold leading-[1.06] tracking-tight text-foreground sm:text-5xl lg:text-6xl",
             )}
           >
-            {locale === "km" ? schoolName.km : "HUN SEN KAMPONG TRALACH"}
+            {title}
             <span
               className={cn(
                 "block text-gold",
@@ -52,7 +60,7 @@ export function Hero({ locale }: { locale: Locale }) {
                   : "mt-3 text-3xl sm:text-4xl tracking-tight",
               )}
             >
-              {locale === "km" ? t("hero.subtitle") : "HIGH SCHOOL"}
+              {subtitle}
             </span>
           </h1>
 
@@ -71,7 +79,7 @@ export function Hero({ locale }: { locale: Locale }) {
               locale === "km" && "text-[15px]",
             )}
           >
-            {t("hero.description")}
+            {description}
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row animate-in slide-in-from-bottom-5 fade-in duration-700 delay-400 fill-mode-both">
@@ -81,7 +89,7 @@ export function Hero({ locale }: { locale: Locale }) {
               icon={ArrowRight}
               className="w-full sm:w-auto"
             >
-              {t("hero.primaryCta")}
+              {primaryCta}
             </ButtonLink>
             <ButtonLink
               href={`/${locale}/academics`}
@@ -89,7 +97,7 @@ export function Hero({ locale }: { locale: Locale }) {
               icon={Newspaper}
               className="w-full border-border bg-white text-foreground hover:bg-secondary sm:w-auto"
             >
-              {t("hero.secondaryCta")}
+              {secondaryCta}
             </ButtonLink>
           </div>
 
@@ -109,7 +117,7 @@ export function Hero({ locale }: { locale: Locale }) {
         <div className="relative animate-fade-in delay-200 fill-mode-both">
           <div className="relative overflow-hidden rounded-2xl border border-border shadow-lift">
             <Image
-              src="/images/school/banner.jpg"
+              src={bannerUrl}
               alt={
                 locale === "km"
                   ? "សាលារៀនវិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច"
@@ -118,6 +126,7 @@ export function Hero({ locale }: { locale: Locale }) {
               width={1400}
               height={900}
               priority
+              unoptimized={bannerUrl.startsWith("http")}
               sizes="(max-width: 1024px) 100vw, 45vw"
               className="h-[260px] w-full object-cover sm:h-[340px] lg:h-[460px]"
             />

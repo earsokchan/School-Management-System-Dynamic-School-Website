@@ -7,9 +7,13 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function AcademicPrograms({ locale, items }: { locale: Locale; items: AcademicProgram[] }) {
+export function AcademicPrograms({ locale, items, homeContent }: { locale: Locale; items: AcademicProgram[]; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const sectionTitle = locale === "km" ? (hc?.academicsTitleKm || t("academics.title")) : (hc?.academicsTitleEn || t("academics.title"));
+  const sectionDesc  = locale === "km" ? (hc?.academicsDescKm  || t("academics.description")) : (hc?.academicsDescEn  || t("academics.description"));
 
   return (
     <section className="py-20 sm:py-28" aria-labelledby="programs-title">
@@ -18,8 +22,8 @@ export function AcademicPrograms({ locale, items }: { locale: Locale; items: Aca
           <SectionHeading
             locale={locale}
             eyebrowKey="academics.eyebrow"
-            title={t("academics.title")}
-            description={t("academics.description")}
+            title={sectionTitle}
+            description={sectionDesc}
           />
         </div>
 

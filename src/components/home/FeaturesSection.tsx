@@ -5,11 +5,28 @@ import { features } from "@/data/site";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
 const featureIcons = [BookOpen, Building2, Dumbbell, ShieldCheck];
 
-export function FeaturesSection({ locale }: { locale: Locale }) {
+export function FeaturesSection({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+
+  const dynamicFeatures = features.map((f, i) => {
+    const n = (i + 1) as 1 | 2 | 3 | 4;
+    return {
+      ...f,
+      title: {
+        en: hc?.[`feat${n}TitleEn` as keyof HomeContent] as string || f.title.en,
+        km: hc?.[`feat${n}TitleKm` as keyof HomeContent] as string || f.title.km,
+      },
+      description: {
+        en: hc?.[`feat${n}DescEn` as keyof HomeContent] as string || f.description.en,
+        km: hc?.[`feat${n}DescKm` as keyof HomeContent] as string || f.description.km,
+      },
+    };
+  });
 
   return (
     <section className="bg-secondary py-20 sm:py-28" aria-labelledby="features-title">
@@ -23,7 +40,7 @@ export function FeaturesSection({ locale }: { locale: Locale }) {
         />
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature, index) => {
+          {dynamicFeatures.map((feature, index) => {
             const Icon = featureIcons[index];
             return (
               <Reveal key={feature.id} delay={index * 90}>
