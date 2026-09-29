@@ -9,9 +9,13 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function NewsSection({ locale, items }: { locale: Locale; items: NewsItem[] }) {
+export function NewsSection({ locale, items, homeContent }: { locale: Locale; items: NewsItem[]; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const sectionTitle = locale === "km" ? (hc?.newsTitleKm || t("news.title")) : (hc?.newsTitleEn || t("news.title"));
+  const sectionDesc  = locale === "km" ? (hc?.newsDescKm  || t("news.description")) : (hc?.newsDescEn  || t("news.description"));
   const featured = items.filter((item) => item.featured)[0] ?? items[0];
   const rest = items.filter((item) => item.id !== featured.id).slice(0, 4);
 
@@ -22,8 +26,8 @@ export function NewsSection({ locale, items }: { locale: Locale; items: NewsItem
           <SectionHeading
             locale={locale}
             eyebrowKey="news.eyebrow"
-            title={t("news.title")}
-            description={t("news.description")}
+            title={sectionTitle}
+            description={sectionDesc}
           />
           <Reveal className="shrink-0">
             <ButtonLink

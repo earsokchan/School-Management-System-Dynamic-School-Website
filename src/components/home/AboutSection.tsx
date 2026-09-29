@@ -6,10 +6,14 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { formatNumber } from "@/lib/format";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function AboutSection({ locale }: { locale: Locale }) {
+export function AboutSection({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
-
+  const hc = homeContent;
+  const aboutTitle = locale === "km" ? (hc?.aboutTitleKm || t("about.title")) : (hc?.aboutTitleEn || t("about.title"));
+  const aboutDesc = locale === "km" ? (hc?.aboutDescriptionKm || t("about.description")) : (hc?.aboutDescriptionEn || t("about.description"));
+  const aboutImg = hc?.aboutImageUrl || "/images/school/about.svg";
   const points = [t("about.point1"), t("about.point2"), t("about.point3")];
 
   return (
@@ -23,10 +27,11 @@ export function AboutSection({ locale }: { locale: Locale }) {
             />
             <div className="relative overflow-hidden rounded-xl shadow-lift">
               <Image
-                src="/images/school/about.svg"
-                alt={t("about.title")}
+                src={aboutImg}
+                alt={aboutTitle}
                 width={1400}
                 height={980}
+                unoptimized={aboutImg.startsWith("http")}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -49,10 +54,10 @@ export function AboutSection({ locale }: { locale: Locale }) {
               id="about-title"
               className="section-title mt-3 text-3xl text-foreground sm:text-4xl lg:text-[2.75rem]"
             >
-              {t("about.title")}
+              {aboutTitle}
             </h2>
             <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {t("about.description")}
+              {aboutDesc}
             </p>
 
             <ul className="mt-8 space-y-4">

@@ -31,11 +31,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
 const YEARS: number[] = Array.from({ length: 40 }, (_, i) => 2040 - i);
 
-export function StudentResults({ locale, items = studentResults }: { locale: Locale; items?: StudentResult[] }) {
+export function StudentResults({ locale, items = studentResults, homeContent }: { locale: Locale; items?: StudentResult[]; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const sectionTitle = locale === "km" ? (hc?.resultsTitleKm || t("results.title")) : (hc?.resultsTitleEn || t("results.title"));
+  const sectionDesc  = locale === "km" ? (hc?.resultsDescKm  || t("results.description")) : (hc?.resultsDescEn  || t("results.description"));
   const [year, setYear] = useState(academicYears[0]);
   const [evaluation, setEvaluation] = useState("1");
   const [studentId, setStudentId] = useState("");
@@ -87,8 +91,8 @@ export function StudentResults({ locale, items = studentResults }: { locale: Loc
         <SectionHeading
           locale={locale}
           eyebrowKey="results.eyebrow"
-          title={t("results.title")}
-          description={t("results.description")}
+          title={sectionTitle}
+          description={sectionDesc}
           light
         />
 

@@ -11,11 +11,15 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
 type Category = GalleryItem["category"];
 
-export function GallerySection({ locale, items }: { locale: Locale; items: GalleryItem[] }) {
+export function GallerySection({ locale, items, homeContent }: { locale: Locale; items: GalleryItem[]; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const sectionTitle = locale === "km" ? (hc?.galleryTitleKm || t("gallery.title")) : (hc?.galleryTitleEn || t("gallery.title"));
+  const sectionDesc  = locale === "km" ? (hc?.galleryDescKm  || t("gallery.description")) : (hc?.galleryDescEn  || t("gallery.description"));
   const [active, setActive] = useState<Category>("all");
   const [lightbox, setLightbox] = useState<number | null>(null);
 
@@ -51,8 +55,8 @@ export function GallerySection({ locale, items }: { locale: Locale; items: Galle
         <SectionHeading
           locale={locale}
           eyebrowKey="gallery.eyebrow"
-          title={t("gallery.title")}
-          description={t("gallery.description")}
+          title={sectionTitle}
+          description={sectionDesc}
           align="center"
         />
 

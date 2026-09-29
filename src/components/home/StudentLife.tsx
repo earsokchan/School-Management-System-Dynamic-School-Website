@@ -6,9 +6,13 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function StudentLife({ locale }: { locale: Locale }) {
+export function StudentLife({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const sectionTitle = locale === "km" ? (hc?.studentLifeTitleKm || t("studentLife.title")) : (hc?.studentLifeTitleEn || t("studentLife.title"));
+  const sectionDesc  = locale === "km" ? (hc?.studentLifeDescKm  || t("studentLife.description")) : (hc?.studentLifeDescEn  || t("studentLife.description"));
 
   return (
     <section className="py-20 sm:py-28" aria-labelledby="student-life-title">
@@ -16,8 +20,8 @@ export function StudentLife({ locale }: { locale: Locale }) {
         <SectionHeading
           locale={locale}
           eyebrowKey="studentLife.eyebrow"
-          title={t("studentLife.title")}
-          description={t("studentLife.description")}
+          title={sectionTitle}
+          description={sectionDesc}
           align="center"
         />
 

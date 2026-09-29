@@ -5,9 +5,15 @@ import { getTranslations } from "@/lib/translations";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function CTASection({ locale }: { locale: Locale }) {
+export function CTASection({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const ctaTitle     = locale === "km" ? (hc?.ctaTitleKm     || t("cta.title"))       : (hc?.ctaTitleEn     || t("cta.title"));
+  const ctaDesc      = locale === "km" ? (hc?.ctaDescKm      || t("cta.description")) : (hc?.ctaDescEn      || t("cta.description"));
+  const ctaPrimary   = locale === "km" ? (hc?.ctaPrimaryKm   || t("cta.primaryCta"))  : (hc?.ctaPrimaryEn   || t("cta.primaryCta"));
+  const ctaSecondary = locale === "km" ? (hc?.ctaSecondaryKm || t("cta.secondaryCta")): (hc?.ctaSecondaryEn || t("cta.secondaryCta"));
 
   return (
     <section className="relative py-20 sm:py-24" aria-labelledby="cta-title">
@@ -28,17 +34,17 @@ export function CTASection({ locale }: { locale: Locale }) {
       <Container>
         <Reveal className="max-w-3xl">
           <h2 id="cta-title" className="font-khmer text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            {t("cta.title")}
+            {ctaTitle}
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
-            {t("cta.description")}
+            {ctaDesc}
           </p>
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
             <ButtonLink href={`/${locale}/contact`} variant="gold" icon={Phone}>
-              {t("cta.primaryCta")}
+              {ctaPrimary}
             </ButtonLink>
             <ButtonLink href={`/${locale}/academics`} variant="outline" icon={ArrowRight}>
-              {t("cta.secondaryCta")}
+              {ctaSecondary}
             </ButtonLink>
           </div>
         </Reveal>

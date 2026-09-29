@@ -10,9 +10,13 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { cn } from "@/lib/cn";
+import type { HomeContent } from "@/components/admin/HomePageEditor";
 
-export function EventsSection({ locale, items }: { locale: Locale; items: SchoolEvent[] }) {
+export function EventsSection({ locale, items, homeContent }: { locale: Locale; items: SchoolEvent[]; homeContent?: HomeContent | null }) {
   const { t } = getTranslations(locale);
+  const hc = homeContent;
+  const sectionTitle = locale === "km" ? (hc?.eventsTitleKm || t("events.title")) : (hc?.eventsTitleEn || t("events.title"));
+  const sectionDesc  = locale === "km" ? (hc?.eventsDescKm  || t("events.description")) : (hc?.eventsDescEn  || t("events.description"));
   const upcoming = items.slice(0, 3);
 
   return (
@@ -22,8 +26,8 @@ export function EventsSection({ locale, items }: { locale: Locale; items: School
           <SectionHeading
             locale={locale}
             eyebrowKey="events.eyebrow"
-            title={t("events.title")}
-            description={t("events.description")}
+            title={sectionTitle}
+            description={sectionDesc}
           />
           <Reveal className="shrink-0">
             <ButtonLink

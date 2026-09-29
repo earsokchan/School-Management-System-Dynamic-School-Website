@@ -21,6 +21,7 @@ import {
   getPublicPrograms,
   getPublicTeachers,
   getPublicResults,
+  getHomeContent,
 } from "@/lib/server/public-content";
 
 export const revalidate = 60;
@@ -32,32 +33,33 @@ interface HomePageProps {
 export default async function HomePage({ params }: HomePageProps) {
   const { lang } = await params;
   const locale = lang as Locale;
-  const [newsItems, eventItems, galleryItems, programItems, teacherItems, resultItems] = await Promise.all([
+  const [newsItems, eventItems, galleryItems, programItems, teacherItems, resultItems, homeContent] = await Promise.all([
     getPublicNews(),
     getPublicEvents(),
     getPublicGallery(),
     getPublicPrograms(),
     getPublicTeachers(),
     getPublicResults(),
+    getHomeContent(),
   ]);
 
   return (
     <>
-      <Hero locale={locale} />
-      <StatsSection locale={locale} />
-      <AboutSection locale={locale} />
-      <FeaturesSection locale={locale} />
-      <AcademicPrograms locale={locale} items={programItems} />
-      <StudentResults locale={locale} items={resultItems} />
-      <NewsSection locale={locale} items={newsItems} />
-      <EventsSection locale={locale} items={eventItems} />
-      <TeachersSection locale={locale} items={teacherItems} />
-      <StudentLife locale={locale} />
-      <GallerySection locale={locale} items={galleryItems} />
+      {homeContent?.sectionHero !== false && <Hero locale={locale} homeContent={homeContent} />}
+      {homeContent?.sectionStats !== false && <StatsSection locale={locale} homeContent={homeContent} />}
+      {homeContent?.sectionAbout !== false && <AboutSection locale={locale} homeContent={homeContent} />}
+      {homeContent?.sectionFeatures !== false && <FeaturesSection locale={locale} homeContent={homeContent} />}
+      {homeContent?.sectionAcademics !== false && <AcademicPrograms locale={locale} items={programItems} homeContent={homeContent} />}
+      {homeContent?.sectionResults !== false && <StudentResults locale={locale} items={resultItems} homeContent={homeContent} />}
+      {homeContent?.sectionNews !== false && <NewsSection locale={locale} items={newsItems} homeContent={homeContent} />}
+      {homeContent?.sectionEvents !== false && <EventsSection locale={locale} items={eventItems} homeContent={homeContent} />}
+      {homeContent?.sectionTeachers !== false && <TeachersSection locale={locale} items={teacherItems} homeContent={homeContent} />}
+      {homeContent?.sectionStudentLife !== false && <StudentLife locale={locale} homeContent={homeContent} />}
+      {homeContent?.sectionGallery !== false && <GallerySection locale={locale} items={galleryItems} homeContent={homeContent} />}
       <CampusSection locale={locale} />
       <LocationSection locale={locale} />
       <ContactSection locale={locale} />
-      <CTASection locale={locale} />
+      {homeContent?.sectionCta !== false && <CTASection locale={locale} homeContent={homeContent} />}
     </>
   );
 }
