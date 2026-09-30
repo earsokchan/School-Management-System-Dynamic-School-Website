@@ -6,14 +6,29 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import type { HomeContent } from "@/components/admin/HomePageEditor";
+import type { AboutContent } from "@/components/admin/AboutPageEditor";
+import type { AcademicsContent } from "@/components/admin/AcademicsPageEditor";
 
-export function CTASection({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
+export function CTASection({
+  locale,
+  homeContent,
+  aboutContent,
+  academicsContent,
+}: {
+  locale: Locale;
+  homeContent?: HomeContent | null;
+  aboutContent?: AboutContent | null;
+  academicsContent?: AcademicsContent | null;
+}) {
   const { t } = getTranslations(locale);
   const hc = homeContent;
-  const ctaTitle     = locale === "km" ? (hc?.ctaTitleKm     || t("cta.title"))       : (hc?.ctaTitleEn     || t("cta.title"));
-  const ctaDesc      = locale === "km" ? (hc?.ctaDescKm      || t("cta.description")) : (hc?.ctaDescEn      || t("cta.description"));
-  const ctaPrimary   = locale === "km" ? (hc?.ctaPrimaryKm   || t("cta.primaryCta"))  : (hc?.ctaPrimaryEn   || t("cta.primaryCta"));
-  const ctaSecondary = locale === "km" ? (hc?.ctaSecondaryKm || t("cta.secondaryCta")): (hc?.ctaSecondaryEn || t("cta.secondaryCta"));
+  const ac = aboutContent;
+  const acc = academicsContent;
+
+  const ctaTitle     = locale === "km" ? (acc?.ctaTitleKm     || ac?.ctaTitleKm     || hc?.ctaTitleKm     || t("cta.title"))       : (acc?.ctaTitleEn     || ac?.ctaTitleEn     || hc?.ctaTitleEn     || t("cta.title"));
+  const ctaDesc      = locale === "km" ? (acc?.ctaDescKm      || ac?.ctaDescKm      || hc?.ctaDescKm      || t("cta.description")) : (acc?.ctaDescEn      || ac?.ctaDescEn      || hc?.ctaDescEn      || t("cta.description"));
+  const ctaPrimary   = locale === "km" ? (acc?.ctaPrimaryKm   || ac?.ctaPrimaryKm   || hc?.ctaPrimaryKm   || t("cta.primaryCta"))  : (acc?.ctaPrimaryEn   || ac?.ctaPrimaryEn   || hc?.ctaPrimaryEn   || t("cta.primaryCta"));
+  const ctaSecondary = locale === "km" ? (acc?.ctaSecondaryKm || ac?.ctaSecondaryKm || hc?.ctaSecondaryKm || t("cta.secondaryCta")): (acc?.ctaSecondaryEn || ac?.ctaSecondaryEn || hc?.ctaSecondaryEn || t("cta.secondaryCta"));
 
   return (
     <section className="relative py-20 sm:py-24" aria-labelledby="cta-title">

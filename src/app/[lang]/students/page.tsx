@@ -9,7 +9,7 @@ import { StudentLife } from "@/components/home/StudentLife";
 import { StudentResults } from "@/components/home/StudentResults";
 import { GallerySection } from "@/components/home/GallerySection";
 import { CTASection } from "@/components/home/CTASection";
-import { getPublicGallery, getPublicResults } from "@/lib/server/public-content";
+import { getPublicGallery, getPublicResults, getStudentsContent } from "@/lib/server/public-content";
 
 export const revalidate = 60;
 
@@ -35,24 +35,38 @@ export default async function StudentsPage({ params }: StudentsPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
-  const [galleryItems, resultItems] = await Promise.all([
+  const [galleryItems, resultItems, sc] = await Promise.all([
     getPublicGallery(),
     getPublicResults(),
+    getStudentsContent(),
   ]);
+
+  const heroEyebrow = locale === "km" ? (sc?.heroEyebrowKm || t("studentLife.eyebrow")) : (sc?.heroEyebrowEn || t("studentLife.eyebrow"));
+  const heroTitle = locale === "km" ? (sc?.heroTitleKm || t("pages.studentsTitle")) : (sc?.heroTitleEn || t("pages.studentsTitle"));
+  const heroDesc = locale === "km" ? (sc?.heroDescKm || t("studentLife.description")) : (sc?.heroDescEn || t("studentLife.description"));
+  const heroImage = sc?.heroImageUrl || "/images/students/sports.svg";
+
+  const showHero = sc?.sectionHero ?? true;
+  const showStudentLife = sc?.sectionStudentLife ?? true;
+  const showResults = sc?.sectionResults ?? true;
+  const showGallery = sc?.sectionGallery ?? true;
+  const showCta = sc?.sectionCta ?? true;
 
   return (
     <>
-      <PageHero
-        locale={locale}
-        eyebrow={t("studentLife.eyebrow")}
-        title={t("pages.studentsTitle")}
-        description={t("studentLife.description")}
-        image="/images/students/sports.svg"
-      />
-      <StudentLife locale={locale} />
-      <StudentResults locale={locale} items={resultItems} />
-      <GallerySection locale={locale} items={galleryItems} />
-      <CTASection locale={locale} />
+      {showHero && (
+        <PageHero
+          locale={locale}
+          eyebrow={heroEyebrow}
+          title={heroTitle}
+          description={heroDesc}
+          image={heroImage}
+        />
+      )}
+      {showStudentLife && <StudentLife locale={locale} studentsContent={sc} />}
+      {showResults && <StudentResults locale={locale} items={resultItems} studentsContent={sc} />}
+      {showGallery && <GallerySection locale={locale} items={galleryItems} studentsContent={sc} />}
+      {showCta && <CTASection locale={locale} />}
     </>
   );
 }

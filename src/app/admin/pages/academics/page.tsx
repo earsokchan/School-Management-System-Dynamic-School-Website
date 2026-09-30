@@ -1,9 +1,7 @@
-import type { Metadata } from "next";
 import { AcademicsPageEditor } from "@/components/admin/AcademicsPageEditor";
 
-export const metadata: Metadata = { 
-  title: "Admin Academics", 
-  robots: { index: false } 
+export const metadata = {
+  title: "Academics Page Editor | Admin Panel",
 };
 
 export default function AdminAcademicsPage() {

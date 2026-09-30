@@ -7,12 +7,47 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
 import type { HomeContent } from "@/components/admin/HomePageEditor";
+import type { StudentsContent } from "@/components/admin/StudentsPageEditor";
 
-export function StudentLife({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
+export function StudentLife({
+  locale,
+  homeContent,
+  studentsContent,
+}: {
+  locale: Locale;
+  homeContent?: HomeContent | null;
+  studentsContent?: StudentsContent | null;
+}) {
   const { t } = getTranslations(locale);
   const hc = homeContent;
-  const sectionTitle = locale === "km" ? (hc?.studentLifeTitleKm || t("studentLife.title")) : (hc?.studentLifeTitleEn || t("studentLife.title"));
-  const sectionDesc  = locale === "km" ? (hc?.studentLifeDescKm  || t("studentLife.description")) : (hc?.studentLifeDescEn  || t("studentLife.description"));
+  const sc = studentsContent;
+
+  const sectionEyebrow = locale === "km"
+    ? (sc?.studentLifeEyebrowKm || t("studentLife.eyebrow"))
+    : (sc?.studentLifeEyebrowEn || t("studentLife.eyebrow"));
+
+  const sectionTitle = locale === "km"
+    ? (sc?.studentLifeTitleKm || hc?.studentLifeTitleKm || t("studentLife.title"))
+    : (sc?.studentLifeTitleEn || hc?.studentLifeTitleEn || t("studentLife.title"));
+
+  const sectionDesc = locale === "km"
+    ? (sc?.studentLifeDescKm || hc?.studentLifeDescKm || t("studentLife.description"))
+    : (sc?.studentLifeDescEn || hc?.studentLifeDescEn || t("studentLife.description"));
+
+  const dynamicCategories = activityCategories.map((cat, idx) => {
+    const n = (idx + 1) as 1 | 2 | 3 | 4 | 5 | 6;
+    return {
+      ...cat,
+      title: {
+        en: (sc?.[`cat${n}TitleEn` as keyof StudentsContent] as string) || cat.title.en,
+        km: (sc?.[`cat${n}TitleKm` as keyof StudentsContent] as string) || cat.title.km,
+      },
+      description: {
+        en: (sc?.[`cat${n}DescEn` as keyof StudentsContent] as string) || cat.description.en,
+        km: (sc?.[`cat${n}DescKm` as keyof StudentsContent] as string) || cat.description.km,
+      },
+    };
+  });
 
   return (
     <section className="py-20 sm:py-28" aria-labelledby="student-life-title">
@@ -20,13 +55,14 @@ export function StudentLife({ locale, homeContent }: { locale: Locale; homeConte
         <SectionHeading
           locale={locale}
           eyebrowKey="studentLife.eyebrow"
+          eyebrow={sectionEyebrow}
           title={sectionTitle}
           description={sectionDesc}
           align="center"
         />
 
         <div className="mt-14 grid auto-rows-[220px] grid-cols-1 gap-5 sm:grid-cols-3">
-          {activityCategories.map((category, index) => (
+          {dynamicCategories.map((category, index) => (
             <Reveal
               key={category.id}
               delay={(index % 3) * 100}

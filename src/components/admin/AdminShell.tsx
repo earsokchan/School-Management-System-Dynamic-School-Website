@@ -41,6 +41,7 @@ export function useAdminLocale(): Locale {
 const navIcons: Record<string, React.ElementType> = {
   dashboard: LayoutDashboard,
   home: Home,
+  about: Info,
   news: Newspaper,
   events: CalendarDays,
   teachers: Users,
@@ -238,7 +239,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
           <main className={cn(
             "w-full",
-            pathname === "/admin/pages/home"
+            pathname === "/admin/pages/home" || pathname === "/admin/pages/about" || pathname === "/admin/pages/academics" || pathname === "/admin/academics" || pathname === "/admin/pages/students"
               ? "overflow-hidden p-0"
               : "p-4 sm:p-6 lg:p-8"
           )}>{children}</main>
