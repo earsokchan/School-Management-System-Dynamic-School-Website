@@ -6,24 +6,42 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import type { HomeContent } from "@/components/admin/HomePageEditor";
+import type { AboutContent } from "@/components/admin/AboutPageEditor";
 
 const featureIcons = [BookOpen, Building2, Dumbbell, ShieldCheck];
 
-export function FeaturesSection({ locale, homeContent }: { locale: Locale; homeContent?: HomeContent | null }) {
+export function FeaturesSection({
+  locale,
+  homeContent,
+  aboutContent,
+}: {
+  locale: Locale;
+  homeContent?: HomeContent | null;
+  aboutContent?: AboutContent | null;
+}) {
   const { t } = getTranslations(locale);
   const hc = homeContent;
+  const ac = aboutContent;
+
+  const sectionTitle = locale === "km"
+    ? (ac?.featuresTitleKm || t("features.title"))
+    : (ac?.featuresTitleEn || t("features.title"));
+
+  const sectionDesc = locale === "km"
+    ? (ac?.featuresDescKm || t("features.description"))
+    : (ac?.featuresDescEn || t("features.description"));
 
   const dynamicFeatures = features.map((f, i) => {
     const n = (i + 1) as 1 | 2 | 3 | 4;
     return {
       ...f,
       title: {
-        en: hc?.[`feat${n}TitleEn` as keyof HomeContent] as string || f.title.en,
-        km: hc?.[`feat${n}TitleKm` as keyof HomeContent] as string || f.title.km,
+        en: ac?.[`feat${n}TitleEn` as keyof AboutContent] as string || hc?.[`feat${n}TitleEn` as keyof HomeContent] as string || f.title.en,
+        km: ac?.[`feat${n}TitleKm` as keyof AboutContent] as string || hc?.[`feat${n}TitleKm` as keyof HomeContent] as string || f.title.km,
       },
       description: {
-        en: hc?.[`feat${n}DescEn` as keyof HomeContent] as string || f.description.en,
-        km: hc?.[`feat${n}DescKm` as keyof HomeContent] as string || f.description.km,
+        en: ac?.[`feat${n}DescEn` as keyof AboutContent] as string || hc?.[`feat${n}DescEn` as keyof HomeContent] as string || f.description.en,
+        km: ac?.[`feat${n}DescKm` as keyof AboutContent] as string || hc?.[`feat${n}DescKm` as keyof HomeContent] as string || f.description.km,
       },
     };
   });
@@ -34,8 +52,8 @@ export function FeaturesSection({ locale, homeContent }: { locale: Locale; homeC
         <SectionHeading
           locale={locale}
           eyebrowKey="features.eyebrow"
-          title={t("features.title")}
-          description={t("features.description")}
+          title={sectionTitle}
+          description={sectionDesc}
           align="center"
         />
 

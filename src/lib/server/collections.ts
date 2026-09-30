@@ -20,6 +20,10 @@ export const collectionNames = [
   "users",
   "settings",
   "home-content",
+  "about-content",
+  "academics-content",
+  "students-content",
+  "teachers-content",
 ] as const;
 
 export type CollectionName = (typeof collectionNames)[number];
@@ -32,6 +36,10 @@ const publicPaths: Partial<Record<CollectionName, string[]>> = {
   "public-teachers": ["/en", "/km", "/en/teachers", "/km/teachers"],
   "public-results": ["/en", "/km", "/en/results", "/km/results", "/en/students", "/km/students"],
   "home-content": ["/en", "/km"],
+  "about-content": ["/en/about", "/km/about"],
+  "academics-content": ["/en/academics", "/km/academics"],
+  "students-content": ["/en/students", "/km/students"],
+  "teachers-content": ["/en/teachers", "/km/teachers"],
 };
 
 export function revalidatePublicContent(name: CollectionName): void {

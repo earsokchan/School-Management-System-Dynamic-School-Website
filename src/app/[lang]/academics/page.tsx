@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { getPublicPrograms } from "@/lib/server/public-content";
+import { getPublicPrograms, getAcademicsContent } from "@/lib/server/public-content";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -36,71 +36,87 @@ export default async function AcademicsPage({ params }: AcademicsPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
-  const programItems = await getPublicPrograms();
+  const [programItems, ac] = await Promise.all([
+    getPublicPrograms(),
+    getAcademicsContent(),
+  ]);
+
+  const heroEyebrow = locale === "km" ? (ac?.heroEyebrowKm || t("academics.eyebrow")) : (ac?.heroEyebrowEn || t("academics.eyebrow"));
+  const heroTitle = locale === "km" ? (ac?.heroTitleKm || t("pages.academicsTitle")) : (ac?.heroTitleEn || t("pages.academicsTitle"));
+  const heroDesc = locale === "km" ? (ac?.heroDescKm || t("academics.description")) : (ac?.heroDescEn || t("academics.description"));
+  const heroImage = ac?.heroImageUrl || "/images/academics/grade-12.svg";
+
+  const showHero = ac?.sectionHero ?? true;
+  const showPrograms = ac?.sectionPrograms ?? true;
+  const showCta = ac?.sectionCta ?? true;
 
   return (
     <>
-      <PageHero
-        locale={locale}
-        eyebrow={t("academics.eyebrow")}
-        title={t("pages.academicsTitle")}
-        description={t("academics.description")}
-        image="/images/academics/grade-12.svg"
-      />
+      {showHero && (
+        <PageHero
+          locale={locale}
+          eyebrow={heroEyebrow}
+          title={heroTitle}
+          description={heroDesc}
+          image={heroImage}
+        />
+      )}
 
-      <section className="py-20 sm:py-28">
-        <Container>
-          <div className="space-y-16">
-            {programItems.map((program, index) => (
-              <Reveal key={program.id}>
-                <article
-                  id={program.id}
-                  className="grid scroll-mt-32 items-center gap-8 lg:grid-cols-2 lg:gap-14"
-                >
-                  <div className={index % 2 === 1 ? "lg:order-2" : ""}>
-                    <div className="relative overflow-hidden rounded-xl shadow-card">
-                      <Image
-                        src={program.image}
-                        alt={locale === "km" ? program.title.km : program.title.en}
-                        width={900}
-                        height={640}
-                        className="w-full object-cover"
-                      />
+      {showPrograms && (
+        <section className="py-20 sm:py-28">
+          <Container>
+            <div className="space-y-16">
+              {programItems.map((program, index) => (
+                <Reveal key={program.id}>
+                  <article
+                    id={program.id}
+                    className="grid scroll-mt-32 items-center gap-8 lg:grid-cols-2 lg:gap-14"
+                  >
+                    <div className={index % 2 === 1 ? "lg:order-2" : ""}>
+                      <div className="relative overflow-hidden rounded-xl shadow-card">
+                        <Image
+                          src={program.image}
+                          alt={locale === "km" ? program.title.km : program.title.en}
+                          width={900}
+                          height={640}
+                          className="w-full object-cover"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className={index % 2 === 1 ? "lg:order-1" : ""}>
-                    <p className="inline-flex rounded-full bg-navy px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gold">
-                      {locale === "km" ? program.grade.km : program.grade.en}
-                    </p>
-                    <h2 className="mt-4 text-2xl font-bold text-foreground sm:text-3xl">
-                      {locale === "km" ? program.title.km : program.title.en}
-                    </h2>
-                    <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                      {locale === "km" ? program.description.km : program.description.en}
-                    </p>
-                    <h3 className="mt-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                      {locale === "km" ? "មុខវិជ្ជាស្នូល" : "Core subjects"}
-                    </h3>
-                    <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {program.subjects.map((subject) => (
-                        <li
-                          key={subject.en}
-                          className="flex items-center gap-2 text-sm font-medium text-foreground"
-                        >
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-gold" aria-hidden="true" />
-                          {locale === "km" ? subject.km : subject.en}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </Container>
-      </section>
+                    <div className={index % 2 === 1 ? "lg:order-1" : ""}>
+                      <p className="inline-flex rounded-full bg-navy px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gold">
+                        {locale === "km" ? program.grade.km : program.grade.en}
+                      </p>
+                      <h2 className="mt-4 text-2xl font-bold text-foreground sm:text-3xl">
+                        {locale === "km" ? program.title.km : program.title.en}
+                      </h2>
+                      <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+                        {locale === "km" ? program.description.km : program.description.en}
+                      </p>
+                      <h3 className="mt-6 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                        {locale === "km" ? "មុខវិជ្ជាស្នូល" : "Core subjects"}
+                      </h3>
+                      <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                        {program.subjects.map((subject) => (
+                          <li
+                            key={subject.en}
+                            className="flex items-center gap-2 text-sm font-medium text-foreground"
+                          >
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-gold" aria-hidden="true" />
+                            {locale === "km" ? subject.km : subject.en}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
-      <CTASection locale={locale} />
+      {showCta && <CTASection locale={locale} academicsContent={ac} />}
     </>
   );
 }

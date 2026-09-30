@@ -12,14 +12,32 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
 import type { HomeContent } from "@/components/admin/HomePageEditor";
+import type { StudentsContent } from "@/components/admin/StudentsPageEditor";
 
 type Category = GalleryItem["category"];
 
-export function GallerySection({ locale, items, homeContent }: { locale: Locale; items: GalleryItem[]; homeContent?: HomeContent | null }) {
+export function GallerySection({
+  locale,
+  items,
+  homeContent,
+  studentsContent,
+}: {
+  locale: Locale;
+  items: GalleryItem[];
+  homeContent?: HomeContent | null;
+  studentsContent?: StudentsContent | null;
+}) {
   const { t } = getTranslations(locale);
   const hc = homeContent;
-  const sectionTitle = locale === "km" ? (hc?.galleryTitleKm || t("gallery.title")) : (hc?.galleryTitleEn || t("gallery.title"));
-  const sectionDesc  = locale === "km" ? (hc?.galleryDescKm  || t("gallery.description")) : (hc?.galleryDescEn  || t("gallery.description"));
+  const sc = studentsContent;
+
+  const sectionTitle = locale === "km"
+    ? (sc?.galleryTitleKm || hc?.galleryTitleKm || t("gallery.title"))
+    : (sc?.galleryTitleEn || hc?.galleryTitleEn || t("gallery.title"));
+
+  const sectionDesc = locale === "km"
+    ? (sc?.galleryDescKm || hc?.galleryDescKm || t("gallery.description"))
+    : (sc?.galleryDescEn || hc?.galleryDescEn || t("gallery.description"));
   const [active, setActive] = useState<Category>("all");
   const [lightbox, setLightbox] = useState<number | null>(null);
 

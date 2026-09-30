@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 interface SectionHeadingProps {
   locale: Locale;
   eyebrowKey: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   align?: "left" | "center";
@@ -20,13 +21,14 @@ function EyebrowLabel() {
 export function SectionHeading({
   locale,
   eyebrowKey,
+  eyebrow,
   title,
   description,
   align = "left",
   light = false,
 }: SectionHeadingProps) {
   const { t } = getTranslations(locale);
-  const eyebrowText = t(eyebrowKey);
+  const eyebrowText = eyebrow || t(eyebrowKey);
 
   return (
     <Reveal

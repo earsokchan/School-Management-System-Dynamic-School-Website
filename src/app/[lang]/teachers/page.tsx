@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { getPublicTeachers } from "@/lib/server/public-content";
+import { getPublicTeachers, getTeachersContent } from "@/lib/server/public-content";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -35,54 +35,70 @@ export default async function TeachersPage({ params }: TeachersPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
-  const teacherItems = await getPublicTeachers();
+  const [teacherItems, tc] = await Promise.all([
+    getPublicTeachers(),
+    getTeachersContent(),
+  ]);
+
+  const showHero = tc?.sectionHero ?? true;
+  const showTeachers = tc?.sectionTeachers ?? true;
+  const showCta = tc?.sectionCta ?? true;
+
+  const heroEyebrow = locale === "km" ? (tc?.heroEyebrowKm || t("teachers.eyebrow")) : (tc?.heroEyebrowEn || t("teachers.eyebrow"));
+  const heroTitle = locale === "km" ? (tc?.heroTitleKm || t("pages.teachersTitle")) : (tc?.heroTitleEn || t("pages.teachersTitle"));
+  const heroDesc = locale === "km" ? (tc?.heroDescKm || t("teachers.description")) : (tc?.heroDescEn || t("teachers.description"));
+  const heroImage = tc?.heroImageUrl || "/images/teachers/teacher-1.svg";
 
   return (
     <>
-      <PageHero
-        locale={locale}
-        eyebrow={t("teachers.eyebrow")}
-        title={t("pages.teachersTitle")}
-        description={t("teachers.description")}
-        image="/images/teachers/teacher-1.svg"
-      />
+      {showHero && (
+        <PageHero
+          locale={locale}
+          eyebrow={heroEyebrow}
+          title={heroTitle}
+          description={heroDesc}
+          image={heroImage}
+        />
+      )}
 
-      <section className="py-20 sm:py-28">
-        <Container>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-            {teacherItems.map((teacher, index) => (
-              <Reveal key={teacher.id} delay={(index % 4) * 80}>
-                <article className="group text-center">
-                  <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-full ring-4 ring-border shadow-card transition-transform duration-300 group-hover:scale-105 sm:h-52 sm:w-52">
-                    <Image
-                      src={teacher.photo}
-                      alt={locale === "km" ? teacher.name.km : teacher.name.en}
-                      fill
-                      sizes="208px"
-                      className="object-cover"
-                    />
-                    <div
-                      className="absolute inset-0 flex items-end justify-center bg-navy/0 pb-3 transition-colors duration-300 group-hover:bg-navy/30"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <h2 className="mt-5 text-lg font-bold text-foreground">
-                    {locale === "km" ? teacher.name.km : teacher.name.en}
-                  </h2>
-                  <p className="text-sm font-semibold text-creeper">
-                    {locale === "km" ? teacher.subject.km : teacher.subject.en}
-                  </p>
-                  <p className="mt-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    {t("teachers.position")} — {locale === "km" ? teacher.position.km : teacher.position.en}
-                  </p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </Container>
-      </section>
+      {showTeachers && (
+        <section className="py-20 sm:py-28">
+          <Container>
+            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+              {teacherItems.map((teacher, index) => (
+                <Reveal key={teacher.id} delay={(index % 4) * 80}>
+                  <article className="group text-center">
+                    <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-full ring-4 ring-border shadow-card transition-transform duration-300 group-hover:scale-105 sm:h-52 sm:w-52">
+                      <Image
+                        src={teacher.photo}
+                        alt={locale === "km" ? teacher.name.km : teacher.name.en}
+                        fill
+                        sizes="208px"
+                        className="object-cover"
+                      />
+                      <div
+                        className="absolute inset-0 flex items-end justify-center bg-navy/0 pb-3 transition-colors duration-300 group-hover:bg-navy/30"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <h2 className="mt-5 text-lg font-bold text-foreground">
+                      {locale === "km" ? teacher.name.km : teacher.name.en}
+                    </h2>
+                    <p className="text-sm font-semibold text-creeper">
+                      {locale === "km" ? teacher.subject.km : teacher.subject.en}
+                    </p>
+                    <p className="mt-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {t("teachers.position")} — {locale === "km" ? teacher.position.km : teacher.position.en}
+                    </p>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
-      <CTASection locale={locale} />
+      {showCta && <CTASection locale={locale} teachersContent={tc} />}
     </>
   );
 }

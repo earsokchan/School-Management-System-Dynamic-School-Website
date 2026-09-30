@@ -8,6 +8,9 @@ import type { AcademicProgram, GalleryItem, NewsItem, SchoolEvent, StudentResult
 import { listCollection, type CollectionName } from "@/lib/server/collections";
 import { hasMongoConfig } from "@/lib/server/env";
 import type { HomeContent } from "@/components/admin/HomePageEditor";
+import type { AboutContent } from "@/components/admin/AboutPageEditor";
+import type { AcademicsContent } from "@/components/admin/AcademicsPageEditor";
+import type { StudentsContent } from "@/components/admin/StudentsPageEditor";
 import { getDatabase } from "@/lib/server/mongodb";
 
 async function getContent<T extends object>(name: CollectionName, fallback: readonly T[]): Promise<T[]> {
@@ -53,6 +56,64 @@ export async function getHomeContent(): Promise<HomeContent | null> {
     const { _id, ...rest } = doc;
     void _id;
     return rest as HomeContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getAboutContent(): Promise<AboutContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("about-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as AboutContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getAcademicsContent(): Promise<AcademicsContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("academics-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as AcademicsContent;
+  } catch {
+    return null;
+  }
+}
+
+import type { TeachersContent } from "@/components/admin/TeachersPageEditor";
+
+export async function getStudentsContent(): Promise<StudentsContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("students-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as StudentsContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getTeachersContent(): Promise<TeachersContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("teachers-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as TeachersContent;
   } catch {
     return null;
   }

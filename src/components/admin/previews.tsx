@@ -297,34 +297,43 @@ export function AdminPagesTable() {
     contact: { en: "Contact", km: "ទំនាក់ទំនង" },
   };
   const pages = [
-    { key: "home", route: "/admin/pages/home", custom: true },
-    { key: "about", route: "/about" },
-    { key: "academics", route: "/academics" },
-    { key: "students", route: "/students" },
-    { key: "teachers", route: "/teachers" },
-    { key: "news", route: "/news" },
-    { key: "events", route: "/events" },
-    { key: "gallery", route: "/gallery" },
-    { key: "contact", route: "/contact" },
+    { key: "home", route: "/en", editUrl: "/admin/pages/home" },
+    { key: "about", route: "/en/about", editUrl: "/admin/pages/about" },
+    { key: "academics", route: "/en/academics", editUrl: "/admin/pages/academics" },
+    { key: "students", route: "/en/students", editUrl: "/admin/students" },
+    { key: "teachers", route: "/en/teachers", editUrl: "/admin/teachers" },
+    { key: "news", route: "/en/news", editUrl: "/admin/news" },
+    { key: "events", route: "/en/events", editUrl: "/admin/events" },
+    { key: "gallery", route: "/en/gallery", editUrl: "/admin/gallery" },
   ] as const;
   return (
-    <TableShell headers={[adminT(locale, "nav.pages"), "Route", "Status", ""]}>
+    <TableShell headers={[adminT(locale, "nav.pages"), "Public Route", "Status", "Actions"]}>
       {pages.map((page) => (
         <tr key={page.key} className="transition-colors hover:bg-slate-50/60">
           <td className="px-5 py-3.5 text-sm font-semibold text-foreground">
-            <span className="flex items-center gap-2">
+            <Link href={page.editUrl} className="flex items-center gap-2 hover:text-gold transition-colors">
               <FileText className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               {locale === "km" ? pageLabels[page.key].km : pageLabels[page.key].en}
-            </span>
+            </Link>
           </td>
-          <td className="px-5 py-3.5 text-sm text-muted-foreground">{page.route}</td>
+          <td className="px-5 py-3.5 text-sm text-muted-foreground">
+            <a href={page.route} target="_blank" rel="noopener noreferrer" className="hover:underline">
+              {page.route}
+            </a>
+          </td>
           <td className="px-5 py-3.5">
             <span className="inline-flex rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600">
               {locale === "km" ? "បានផ្សព្វផ្សាយ" : "Published"}
             </span>
           </td>
           <td className="px-5 py-3.5 text-right">
-            <ActionButtons editUrl={"custom" in page ? page.route : undefined} />
+            <Link
+              href={page.editUrl}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-navy/80"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              {locale === "km" ? "កែសម្រួល" : "Edit Page"}
+            </Link>
           </td>
         </tr>
       ))}

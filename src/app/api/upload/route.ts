@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/admin-auth";
 import { ImageUploadError, uploadImage } from "@/lib/server/blob";
-import { hasBlobConfig } from "@/lib/server/env";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -9,9 +8,6 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   const authError = await requireAdmin();
   if (authError) return authError;
-  if (!hasBlobConfig()) {
-    return NextResponse.json({ error: "Vercel Blob is not configured" }, { status: 503 });
-  }
 
   try {
     const formData = await request.formData();
@@ -26,14 +22,19 @@ export async function POST(request: Request) {
       data: {
         url: result.url,
         pathname: result.pathname,
-        contentType: file.type,
+        contentType: file.type || "image/jpeg",
         size: file.size,
       },
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Image upload API error:", error);
     if (error instanceof ImageUploadError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
-    return NextResponse.json({ error: "Unable to upload the image" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Unable to upload the image";
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
   }
 }

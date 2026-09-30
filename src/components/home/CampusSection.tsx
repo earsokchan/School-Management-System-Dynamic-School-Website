@@ -5,9 +5,42 @@ import { facilities } from "@/data/site";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import type { AboutContent } from "@/components/admin/AboutPageEditor";
 
-export function CampusSection({ locale }: { locale: Locale }) {
+export function CampusSection({
+  locale,
+  aboutContent,
+}: {
+  locale: Locale;
+  aboutContent?: AboutContent | null;
+}) {
   const { t } = getTranslations(locale);
+  const ac = aboutContent;
+
+  const eyebrow = locale === "km" ? (ac?.campusEyebrowKm || t("campus.eyebrow")) : (ac?.campusEyebrowEn || t("campus.eyebrow"));
+  const title = locale === "km" ? (ac?.campusTitleKm || t("campus.title")) : (ac?.campusTitleEn || t("campus.title"));
+  const description = locale === "km" ? (ac?.campusDescKm || t("campus.description")) : (ac?.campusDescEn || t("campus.description"));
+
+  const stat1Num = ac?.campusStat1Num || "35+";
+  const stat1Label = locale === "km" ? (ac?.campusStat1LabelKm || "បន្ទប់រៀន") : (ac?.campusStat1LabelEn || "Classrooms");
+
+  const stat2Num = ac?.campusStat2Num || "6";
+  const stat2Label = locale === "km" ? (ac?.campusStat2LabelKm || "ទីលានកីឡា") : (ac?.campusStat2LabelEn || "Sports areas");
+
+  const dynamicFacilities = facilities.map((f, i) => {
+    const n = (i + 1) as 1 | 2 | 3 | 4 | 5 | 6;
+    return {
+      ...f,
+      name: {
+        en: (ac?.[`fac${n}TitleEn` as keyof AboutContent] as string) || f.name.en,
+        km: (ac?.[`fac${n}TitleKm` as keyof AboutContent] as string) || f.name.km,
+      },
+      description: {
+        en: (ac?.[`fac${n}DescEn` as keyof AboutContent] as string) || f.description.en,
+        km: (ac?.[`fac${n}DescKm` as keyof AboutContent] as string) || f.description.km,
+      },
+    };
+  });
 
   return (
     <section className="py-20 sm:py-28" aria-labelledby="campus-title">
@@ -17,27 +50,28 @@ export function CampusSection({ locale }: { locale: Locale }) {
             <SectionHeading
               locale={locale}
               eyebrowKey="campus.eyebrow"
-              title={t("campus.title")}
-              description={t("campus.description")}
+              eyebrow={eyebrow}
+              title={title}
+              description={description}
             />
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="rounded-xl bg-navy p-6 text-white">
-                <p className="font-khmer text-4xl font-bold text-gold">35+</p>
+                <p className="font-khmer text-4xl font-bold text-gold">{stat1Num}</p>
                 <p className="mt-1 text-sm text-primary-foreground/70">
-                  {locale === "km" ? "បន្ទប់រៀន" : "Classrooms"}
+                  {stat1Label}
                 </p>
               </div>
               <div className="rounded-xl bg-secondary p-6">
-                <p className="font-khmer text-4xl font-bold text-foreground">6</p>
+                <p className="font-khmer text-4xl font-bold text-foreground">{stat2Num}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {locale === "km" ? "ទីលានកីឡា" : "Sports areas"}
+                  {stat2Label}
                 </p>
               </div>
             </div>
           </Reveal>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {facilities.slice(0, 4).map((facility, index) => (
+            {dynamicFacilities.slice(0, 4).map((facility, index) => (
               <Reveal key={facility.id} delay={index * 80}>
                 <article className="group relative aspect-[4/3] overflow-hidden rounded-xl shadow-card">
                   <Image
@@ -66,7 +100,7 @@ export function CampusSection({ locale }: { locale: Locale }) {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {facilities.slice(4).map((facility, index) => (
+          {dynamicFacilities.slice(4).map((facility, index) => (
             <Reveal key={facility.id} delay={index * 80}>
               <article className="flex items-center gap-5 rounded-xl border border-border bg-secondary p-6 card-hover">
                 <div className="relative h-24 w-32 shrink-0 overflow-hidden rounded-xl">

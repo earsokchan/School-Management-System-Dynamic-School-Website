@@ -10,10 +10,13 @@ export const adminNavGroups: { label?: Localized; items: { key: string; label: L
     label: { en: "Content", km: "មាតិកា" },
     items: [
       { key: "home", label: { en: "Home Page", km: "ទំព័រដើម" }, href: "/admin/pages/home" },
+      { key: "about", label: { en: "About Page", km: "ទំព័រអំពីសាលា" }, href: "/admin/pages/about" },
       { key: "news", label: { en: "News", km: "ព័ត៌មាន" }, href: "/admin/news" },
       { key: "events", label: { en: "Events", km: "ព្រឹត្តិការណ៍" }, href: "/admin/events" },
-      { key: "academics", label: { en: "Academic Programs", km: "កម្មវិធីសិក្សា" }, href: "/admin/academics" },
-      { key: "gallery", label: { en: "Gallery", km: "វិចិត្រសាល" }, href: "/admin/gallery" },
+      { key: "academics", label: { en: "Academics Page", km: "ទំព័រកម្មវិធីសិក្សា" }, href: "/admin/pages/academics" },
+      { key: "students", label: { en: "Students Page", km: "ទំព័រសិស្សានុសិស្ស" }, href: "/admin/pages/students" },
+      { key: "teachers", label: { en: "Teachers Page", km: "ទំព័រលោកគ្រូអ្នកគ្រូ" }, href: "/admin/pages/teachers" },
+      { key: "gallery", label: { en: "Gallery", km: "វិចិត្រសាល" }, href: "/admin/pages/gallery" },
       { key: "pages", label: { en: "Pages", km: "ទំព័រ" }, href: "/admin/pages" },
     ]
   },
