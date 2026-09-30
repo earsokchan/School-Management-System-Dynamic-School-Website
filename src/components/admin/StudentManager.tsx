@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Upload, Download, Eye } from "lucide-react";
+import Link from "next/link";
+import Papa from "papaparse";
 import { useAdminLocale } from "@/components/admin/AdminShell";
-import { uploadImage, useCollection } from "@/hooks/use-collection";
+import { StudentFormSheet, type StudentClassOption } from "@/components/admin/StudentFormSheet";
+import { useCollection } from "@/hooks/use-collection";
 
 export type StudentType = "Technology" | "Society";
 
@@ -18,6 +21,11 @@ export interface Student {
   grade: string;
   type: StudentType;
   gender: string;
+  addressCountry?: string;
+  addressCity?: string;
+  addressProvince?: string;
+  addressVillage?: string;
+  previousSchool?: string;
 }
 
 const mockStudents: Student[] = [
@@ -42,10 +50,19 @@ const mockStudents: Student[] = [
     grade: "11",
     type: "Society",
     gender: "Female",
+    addressCity: "Phnom Penh",
+    addressCountry: "Cambodia",
+    previousSchool: "Preah Sisowath High School",
   },
 ];
 
-export function StudentManager({ initialData = mockStudents }: { initialData?: Student[] }) {
+export function StudentManager({ 
+  initialData = mockStudents,
+  availableClasses = []
+}: { 
+  initialData?: Student[];
+  availableClasses?: StudentClassOption[];
+}) {
   const locale = useAdminLocale();
   const { items: students, create, update, remove } = useCollection<Student>(
     "admin-students",
@@ -53,35 +70,14 @@ export function StudentManager({ initialData = mockStudents }: { initialData?: S
     { loadOnMount: false },
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
-  const [formData, setFormData] = useState<Partial<Student>>({
-    name: "",
-    phone: "",
-    className: "",
-    grade: "",
-    type: "Technology",
-    gender: "Male",
-    photo: "https://i.pravatar.cc/150?img=1",
-  });
-
   const openAddModal = () => {
-    setFormData({
-      name: "",
-      phone: "",
-      className: "",
-      grade: "",
-      type: "Technology",
-      gender: "Male",
-      photo: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
-    });
     setEditingStudent(null);
     setIsModalOpen(true);
   };
 
   const openEditModal = (student: Student) => {
-    setFormData({ ...student });
     setEditingStudent(student);
     setIsModalOpen(true);
   };
@@ -96,36 +92,59 @@ export function StudentManager({ initialData = mockStudents }: { initialData?: S
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (editingStudent) {
-        await update(editingStudent.id, formData);
-      } else {
-        await create({
-          ...(formData as Student),
-          studentId: Math.floor(1000000 + Math.random() * 9000000).toString(),
-        });
-      }
-      setIsModalOpen(false);
-    } catch (requestError) {
-      window.alert(requestError instanceof Error ? requestError.message : "Unable to save student");
+  const handleSubmit = async (values: Partial<Student>) => {
+    if (editingStudent) {
+      await update(editingStudent.id, values);
+    } else {
+      await create({
+        ...(values as Student),
+        studentId: Math.floor(1000000 + Math.random() * 9000000).toString(),
+      });
     }
   };
 
-  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleExport = () => {
+    const csv = Papa.unparse(students.map(s => {
+      const { id, photo, ...rest } = s;
+      return rest;
+    }));
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "students_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
-    try {
-      const uploaded = await uploadImage(file, "students");
-      setFormData((current) => ({ ...current, photo: uploaded.url }));
-    } catch (requestError) {
-      window.alert(requestError instanceof Error ? requestError.message : "Unable to upload image");
-    } finally {
-      setUploading(false);
-      event.target.value = "";
-    }
+    
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        try {
+          const rows = results.data as Partial<Student>[];
+          for (const row of rows) {
+            await create({
+              ...row,
+              studentId: row.studentId || Math.floor(1000000 + Math.random() * 9000000).toString(),
+              photo: row.photo || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+            });
+          }
+          alert("Import successful!");
+        } catch (error) {
+          alert("Error importing students.");
+        }
+      },
+      error: () => {
+        alert("Error parsing CSV.");
+      }
+    });
+    e.target.value = "";
   };
 
   return (
@@ -140,19 +159,34 @@ export function StudentManager({ initialData = mockStudents }: { initialData?: S
             {locale === "km" ? "គ្រប់គ្រងទិន្នន័យសិស្ស" : "Manage student records"}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openAddModal}
-          className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
-        >
-          <Plus className="h-4 w-4" aria-hidden="true" />
-          {locale === "km" ? "បន្ថែមសិស្សថ្មី" : "Add Student"}
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-white px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-slate-50">
+            <Upload className="h-4 w-4" />
+            {locale === "km" ? "នាំចូល" : "Import CSV"}
+            <input type="file" accept=".csv" className="hidden" onChange={handleImport} />
+          </label>
+          <button
+            type="button"
+            onClick={handleExport}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-slate-50"
+          >
+            <Download className="h-4 w-4" />
+            {locale === "km" ? "នាំចេញ" : "Export CSV"}
+          </button>
+          <button
+            type="button"
+            onClick={openAddModal}
+            className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            {locale === "km" ? "បន្ថែមសិស្សថ្មី" : "Add Student"}
+          </button>
+        </div>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-border bg-white shadow-sm">
-        <table className="w-full min-w-[900px] text-left text-sm">
+        <table className="w-full min-w-[1100px] text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-slate-50">
               <th className="px-5 py-3.5 font-bold uppercase tracking-wider text-muted-foreground text-xs">Photo</th>
@@ -163,6 +197,8 @@ export function StudentManager({ initialData = mockStudents }: { initialData?: S
               <th className="px-5 py-3.5 font-bold uppercase tracking-wider text-muted-foreground text-xs">Grade</th>
               <th className="px-5 py-3.5 font-bold uppercase tracking-wider text-muted-foreground text-xs">Class</th>
               <th className="px-5 py-3.5 font-bold uppercase tracking-wider text-muted-foreground text-xs">Type</th>
+              <th className="px-5 py-3.5 font-bold uppercase tracking-wider text-muted-foreground text-xs">Address</th>
+              <th className="px-5 py-3.5 font-bold uppercase tracking-wider text-muted-foreground text-xs">Old School</th>
               <th className="px-5 py-3.5 font-bold uppercase tracking-wider text-muted-foreground text-xs text-right">Actions</th>
             </tr>
           </thead>
@@ -199,8 +235,18 @@ export function StudentManager({ initialData = mockStudents }: { initialData?: S
                     {student.type}
                   </span>
                 </td>
+                <td className="px-5 py-3.5 text-muted-foreground truncate max-w-[150px]" title={[student.addressVillage, student.addressCity, student.addressProvince, student.addressCountry].filter(Boolean).join(", ")}>
+                  {[student.addressVillage, student.addressCity, student.addressProvince, student.addressCountry].filter(Boolean).join(", ") || "-"}
+                </td>
+                <td className="px-5 py-3.5 text-muted-foreground truncate max-w-[150px]" title={student.previousSchool}>{student.previousSchool || "-"}</td>
                 <td className="px-5 py-3.5 text-right">
                   <div className="flex justify-end gap-2">
+                    <Link
+                      href={`/admin/students/${student.id}`}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-slate-100 hover:text-black"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
                     <button
                       onClick={() => openEditModal(student)}
                       className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-black"
@@ -226,148 +272,14 @@ export function StudentManager({ initialData = mockStudents }: { initialData?: S
         )}
       </div>
 
-      {/* Slide-over Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-sm">
-          <div className="w-full max-w-md h-full bg-white p-8 shadow-2xl relative animate-in slide-in-from-right duration-300 flex flex-col overflow-y-auto">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <h2 className="text-xl font-bold text-foreground mb-6">
-              {editingStudent ? "Edit Student" : "Add New Student"}
-            </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4 flex flex-col flex-1">
-              <div>
-                <label className="mb-1.5 block text-sm font-semibold text-foreground">Photo URL</label>
-                <div className="flex gap-4 items-center">
-                  <div className="relative h-12 w-12 overflow-hidden rounded-full border border-border shrink-0">
-                    <Image src={formData.photo || "https://i.pravatar.cc/150"} alt="Preview" fill sizes="48px" className="object-cover" />
-                  </div>
-                  <input
-                    type="url"
-                    required
-                    value={formData.photo}
-                    onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-                    className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
-                  />
-                  <label className="mt-3 block text-xs font-semibold text-muted-foreground">Upload to Blob</label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-                    disabled={uploading}
-                    onChange={handlePhotoUpload}
-                    className="mt-1 block w-full text-xs text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white"
-                  />
-                  {uploading ? <p className="mt-1 text-xs text-muted-foreground">Uploading image…</p> : null}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">Gender</label>
-                  <select
-                    required
-                    value={formData.gender}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black bg-white"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">Phone</label>
-                  <input
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">Grade</label>
-                  <select
-                    required
-                    value={formData.grade}
-                    onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                    className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black bg-white"
-                  >
-                    <option value="" disabled>Select Grade</option>
-                    <option value="10">Grade 10</option>
-                    <option value="11">Grade 11</option>
-                    <option value="12">Grade 12</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">Class</label>
-                  <select
-                    required
-                    value={formData.className}
-                    onChange={(e) => setFormData({ ...formData, className: e.target.value })}
-                    className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black bg-white"
-                  >
-                    <option value="" disabled>Select Class</option>
-                    <option value="10A">10A</option>
-                    <option value="10B">10B</option>
-                    <option value="11A">11A</option>
-                    <option value="11B">11B</option>
-                    <option value="12A">12A</option>
-                    <option value="12B">12B</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-foreground">Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as StudentType })}
-                    className="w-full rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black bg-white"
-                  >
-                    <option value="Technology">Technology</option>
-                    <option value="Society">Society</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="mt-auto pt-8 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="rounded-xl px-4 py-2.5 text-sm font-medium text-foreground hover:bg-secondary"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-xl bg-black px-6 py-2.5 text-sm font-semibold text-white hover:bg-gray-800"
-                >
-                  {editingStudent ? "Save Changes" : "Add Student"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <StudentFormSheet
+        open={isModalOpen}
+        student={editingStudent}
+        availableClasses={availableClasses}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }

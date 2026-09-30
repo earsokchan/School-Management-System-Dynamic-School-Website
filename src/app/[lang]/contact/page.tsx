@@ -5,6 +5,7 @@ import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
 import { PageHero } from "@/components/ui/PageHero";
+import { getContactPageContent } from "@/lib/server/public-content";
 import { ContactSection } from "@/components/home/ContactSection";
 import { LocationSection } from "@/components/home/LocationSection";
 
@@ -30,15 +31,21 @@ export default async function ContactPage({ params }: ContactPageProps) {
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
+  const pc = await getContactPageContent();
+
+  const heroEyebrow = locale === "km" ? (pc?.heroEyebrowKm || t("contact.eyebrow")) : (pc?.heroEyebrowEn || t("contact.eyebrow"));
+  const heroTitle = locale === "km" ? (pc?.heroTitleKm || t("pages.contactTitle")) : (pc?.heroTitleEn || t("pages.contactTitle"));
+  const heroDesc = locale === "km" ? (pc?.heroDescKm || t("contact.description")) : (pc?.heroDescEn || t("contact.description"));
+  const heroImage = pc?.heroImageUrl || "/images/school/about.svg";
 
   return (
     <>
       <PageHero
         locale={locale}
-        eyebrow={t("contact.eyebrow")}
-        title={t("pages.contactTitle")}
-        description={t("contact.description")}
-        image="/images/school/about.svg"
+        eyebrow={heroEyebrow}
+        title={heroTitle}
+        description={heroDesc}
+        image={heroImage}
       />
       <ContactSection locale={locale} />
       <LocationSection locale={locale} />

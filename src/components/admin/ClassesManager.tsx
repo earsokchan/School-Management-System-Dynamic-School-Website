@@ -202,17 +202,20 @@ export function ClassesManager({
           <tbody className="divide-y divide-border/50">
             {grades.map(grade => {
               const gradeClasses = classes.filter(c => c.grade === grade);
-              if (gradeClasses.length === 0) return null;
               
               return (
                 <tr key={grade} className="transition-colors hover:bg-slate-50/50 group">
                   <td className="px-4 py-2.5">
                     <div className="flex flex-wrap gap-1.5">
-                      {gradeClasses.map(c => (
-                        <span key={c.id} className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700">
-                          {c.name}
-                        </span>
-                      ))}
+                      {gradeClasses.length > 0 ? (
+                        gradeClasses.map(c => (
+                          <span key={c.id} className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700">
+                            {c.name}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">No classes</span>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-2.5">
@@ -240,9 +243,9 @@ export function ClassesManager({
             )})}
           </tbody>
         </table>
-        {classes.length === 0 && (
+        {grades.length === 0 && (
           <div className="p-8 text-center text-muted-foreground">
-            No classes found.
+            No grades found.
           </div>
         )}
       </div>

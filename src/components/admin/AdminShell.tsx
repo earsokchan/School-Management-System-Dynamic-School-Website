@@ -26,6 +26,7 @@ import {
   ShieldCheck,
   UserCog,
   Home,
+  Phone,
 } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { adminT } from "@/lib/admin-translations";
@@ -43,11 +44,15 @@ const navIcons: Record<string, React.ElementType> = {
   home: Home,
   about: Info,
   news: Newspaper,
+  news_page: Newspaper,
   events: CalendarDays,
+  events_page: CalendarDays,
   teachers: Users,
   students: GraduationCap,
   results: Trophy,
   gallery: Images,
+  gallery_page: Images,
+  contact_page: Phone,
   pages: FileText,
   settings: SettingsIcon,
   academics: BookOpen,
@@ -239,7 +244,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
           <main className={cn(
             "w-full",
-            pathname === "/admin/pages/home" || pathname === "/admin/pages/about" || pathname === "/admin/pages/academics" || pathname === "/admin/academics" || pathname === "/admin/pages/students" || pathname === "/admin/pages/teachers" || pathname === "/admin/teachers"
+            pathname === "/admin/pages/home" || pathname === "/admin/pages/about" || pathname === "/admin/pages/academics" || pathname === "/admin/academics" || pathname === "/admin/pages/students" || pathname === "/admin/pages/teachers" || pathname === "/admin/teachers" || pathname === "/admin/pages/news" || pathname === "/admin/pages/events" || pathname === "/admin/pages/gallery" || pathname === "/admin/pages/contact"
               ? "overflow-hidden p-0"
               : "p-4 sm:p-6 lg:p-8"
           )}>{children}</main>
