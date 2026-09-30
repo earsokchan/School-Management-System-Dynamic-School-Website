@@ -15,6 +15,7 @@ export const adminNavGroups: { label?: Localized; items: { key: string; label: L
       { key: "events", label: { en: "Events", km: "ព្រឹត្តិការណ៍" }, href: "/admin/events" },
       { key: "academics", label: { en: "Academics Page", km: "ទំព័រកម្មវិធីសិក្សា" }, href: "/admin/pages/academics" },
       { key: "students", label: { en: "Students Page", km: "ទំព័រសិស្សានុសិស្ស" }, href: "/admin/pages/students" },
+      { key: "teachers", label: { en: "Teachers Page", km: "ទំព័រលោកគ្រូអ្នកគ្រូ" }, href: "/admin/pages/teachers" },
       { key: "gallery", label: { en: "Gallery", km: "វិចិត្រសាល" }, href: "/admin/pages/gallery" },
       { key: "pages", label: { en: "Pages", km: "ទំព័រ" }, href: "/admin/pages" },
     ]

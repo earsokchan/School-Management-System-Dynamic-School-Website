@@ -89,6 +89,8 @@ export async function getAcademicsContent(): Promise<AcademicsContent | null> {
   }
 }
 
+import type { TeachersContent } from "@/components/admin/TeachersPageEditor";
+
 export async function getStudentsContent(): Promise<StudentsContent | null> {
   if (!hasMongoConfig()) return null;
   try {
@@ -98,6 +100,20 @@ export async function getStudentsContent(): Promise<StudentsContent | null> {
     const { _id, ...rest } = doc;
     void _id;
     return rest as StudentsContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getTeachersContent(): Promise<TeachersContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("teachers-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as TeachersContent;
   } catch {
     return null;
   }

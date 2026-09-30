@@ -1,5 +1,5 @@
 import { TeachersPageEditor } from "@/components/admin/TeachersPageEditor";
 
-export default function AdminTeachersAliasPage() {
+export default function AdminTeachersPage() {
   return <TeachersPageEditor />;
 }

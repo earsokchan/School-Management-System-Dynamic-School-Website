@@ -73,8 +73,8 @@ export async function uploadImage(file: File, folder = "images") {
       let result;
       try {
         result = await put(pathname, file, { ...optionsBase, access: "public" });
-      } catch (publicErr: any) {
-        const msg = String(publicErr?.message || publicErr);
+      } catch (publicErr: unknown) {
+        const msg = publicErr instanceof Error ? publicErr.message : String(publicErr);
         if (msg.includes("private store") || msg.includes("private access")) {
           result = await put(pathname, file, { ...optionsBase, access: "private" });
         } else {

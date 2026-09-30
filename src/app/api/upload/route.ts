@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/admin-auth";
 import { ImageUploadError, uploadImage } from "@/lib/server/blob";
-import { hasBlobConfig } from "@/lib/server/env";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -27,13 +26,14 @@ export async function POST(request: Request) {
         size: file.size,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Image upload API error:", error);
     if (error instanceof ImageUploadError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    const message = error instanceof Error ? error.message : "Unable to upload the image";
     return NextResponse.json(
-      { error: error?.message || "Unable to upload the image" },
+      { error: message },
       { status: 500 }
     );
   }

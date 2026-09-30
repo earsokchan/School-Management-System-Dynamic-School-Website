@@ -239,7 +239,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
           <main className={cn(
             "w-full",
-            pathname === "/admin/pages/home" || pathname === "/admin/pages/about" || pathname === "/admin/pages/academics" || pathname === "/admin/academics" || pathname === "/admin/pages/students"
+            pathname === "/admin/pages/home" || pathname === "/admin/pages/about" || pathname === "/admin/pages/academics" || pathname === "/admin/academics" || pathname === "/admin/pages/students" || pathname === "/admin/pages/teachers" || pathname === "/admin/teachers"
               ? "overflow-hidden p-0"
               : "p-4 sm:p-6 lg:p-8"
           )}>{children}</main>

@@ -46,14 +46,14 @@ export async function GET(request: Request) {
     const cacheControl = response.headers.get("cache-control") || "public, max-age=31536000, immutable";
     const body = response.body;
 
-    return new NextResponse(body as any, {
+    return new NextResponse(body as unknown as BodyInit, {
       status: 200,
       headers: {
         "Content-Type": contentType,
         "Cache-Control": cacheControl,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error proxying Vercel Blob image:", error);
     return new NextResponse("Failed to fetch image", { status: 500 });
   }

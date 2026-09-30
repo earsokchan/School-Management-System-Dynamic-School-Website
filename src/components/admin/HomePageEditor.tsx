@@ -8,7 +8,7 @@ import {
   Layout, Type, BarChart2, Info,
   Zap, BookOpen, Megaphone, CalendarDays, Users,
   GripVertical, Save, Upload, Loader2, AlertCircle,
-  Image as ImageIcon, Hash, Phone, MapPin, Trophy,
+  Image as ImageIcon, Hash, Phone, Trophy,
   Heart, Camera,
 } from "lucide-react";
 import Image from "next/image";
