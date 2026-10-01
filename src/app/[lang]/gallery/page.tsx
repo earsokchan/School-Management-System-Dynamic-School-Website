@@ -5,7 +5,7 @@ import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
 import { PageHero } from "@/components/ui/PageHero";
-import { getPublicGallery } from "@/lib/server/public-content";
+import { getPublicGallery, getGalleryPageContent } from "@/lib/server/public-content";
 import { GallerySection } from "@/components/home/GallerySection";
 
 export const revalidate = 60;
@@ -33,15 +33,21 @@ export default async function GalleryPage({ params }: GalleryPageProps) {
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
   const galleryItems = await getPublicGallery();
+  const pc = await getGalleryPageContent();
+
+  const heroEyebrow = locale === "km" ? (pc?.heroEyebrowKm || t("gallery.eyebrow")) : (pc?.heroEyebrowEn || t("gallery.eyebrow"));
+  const heroTitle = locale === "km" ? (pc?.heroTitleKm || t("pages.galleryTitle")) : (pc?.heroTitleEn || t("pages.galleryTitle"));
+  const heroDesc = locale === "km" ? (pc?.heroDescKm || t("gallery.description")) : (pc?.heroDescEn || t("gallery.description"));
+  const heroImage = pc?.heroImageUrl || "/images/gallery/g-1.svg";
 
   return (
     <>
       <PageHero
         locale={locale}
-        eyebrow={t("gallery.eyebrow")}
-        title={t("pages.galleryTitle")}
-        description={t("gallery.description")}
-        image="/images/gallery/g-1.svg"
+        eyebrow={heroEyebrow}
+        title={heroTitle}
+        description={heroDesc}
+        image={heroImage}
       />
       <GallerySection locale={locale} items={galleryItems} />
     </>

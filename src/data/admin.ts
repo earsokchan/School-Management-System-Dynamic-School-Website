@@ -11,13 +11,14 @@ export const adminNavGroups: { label?: Localized; items: { key: string; label: L
     items: [
       { key: "home", label: { en: "Home Page", km: "ទំព័រដើម" }, href: "/admin/pages/home" },
       { key: "about", label: { en: "About Page", km: "ទំព័រអំពីសាលា" }, href: "/admin/pages/about" },
-      { key: "news", label: { en: "News", km: "ព័ត៌មាន" }, href: "/admin/news" },
-      { key: "events", label: { en: "Events", km: "ព្រឹត្តិការណ៍" }, href: "/admin/events" },
+      { key: "news", label: { en: "News Articles", km: "អត្ថបទព័ត៌មាន" }, href: "/admin/news" },
+      { key: "news_page", label: { en: "News Page", km: "ទំព័រព័ត៌មាន" }, href: "/admin/pages/news" },
+      { key: "events_page", label: { en: "Events Page", km: "ទំព័រព្រឹត្តិការណ៍" }, href: "/admin/pages/events" },
       { key: "academics", label: { en: "Academics Page", km: "ទំព័រកម្មវិធីសិក្សា" }, href: "/admin/pages/academics" },
       { key: "students", label: { en: "Students Page", km: "ទំព័រសិស្សានុសិស្ស" }, href: "/admin/pages/students" },
       { key: "teachers", label: { en: "Teachers Page", km: "ទំព័រលោកគ្រូអ្នកគ្រូ" }, href: "/admin/pages/teachers" },
-      { key: "gallery", label: { en: "Gallery", km: "វិចិត្រសាល" }, href: "/admin/pages/gallery" },
-      { key: "pages", label: { en: "Pages", km: "ទំព័រ" }, href: "/admin/pages" },
+      { key: "gallery_page", label: { en: "Gallery Page", km: "ទំព័រវិចិត្រសាល" }, href: "/admin/pages/gallery" },
+      { key: "contact_page", label: { en: "Contact Page", km: "ទំព័រទំនាក់ទំនង" }, href: "/admin/pages/contact" },
     ]
   },
   {

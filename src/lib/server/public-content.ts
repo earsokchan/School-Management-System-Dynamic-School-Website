@@ -11,6 +11,10 @@ import type { HomeContent } from "@/components/admin/HomePageEditor";
 import type { AboutContent } from "@/components/admin/AboutPageEditor";
 import type { AcademicsContent } from "@/components/admin/AcademicsPageEditor";
 import type { StudentsContent } from "@/components/admin/StudentsPageEditor";
+import type { NewsPageContent } from "@/components/admin/NewsPageEditor";
+import type { EventsPageContent } from "@/components/admin/EventsPageEditor";
+import type { GalleryPageContent } from "@/components/admin/GalleryPageEditor";
+import type { ContactPageContent } from "@/components/admin/ContactPageEditor";
 import { getDatabase } from "@/lib/server/mongodb";
 
 async function getContent<T extends object>(name: CollectionName, fallback: readonly T[]): Promise<T[]> {
@@ -114,6 +118,62 @@ export async function getTeachersContent(): Promise<TeachersContent | null> {
     const { _id, ...rest } = doc;
     void _id;
     return rest as TeachersContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getNewsPageContent(): Promise<NewsPageContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("news-page-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as NewsPageContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getEventsPageContent(): Promise<EventsPageContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("events-page-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as EventsPageContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getGalleryPageContent(): Promise<GalleryPageContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("gallery-page-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as GalleryPageContent;
+  } catch {
+    return null;
+  }
+}
+
+export async function getContactPageContent(): Promise<ContactPageContent | null> {
+  if (!hasMongoConfig()) return null;
+  try {
+    const db = await getDatabase();
+    const doc = await db.collection("contact-page-content").findOne({ id: "singleton" });
+    if (!doc) return null;
+    const { _id, ...rest } = doc;
+    void _id;
+    return rest as ContactPageContent;
   } catch {
     return null;
   }

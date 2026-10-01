@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { getPublicNews } from "@/lib/server/public-content";
+import { getPublicNews, getNewsPageContent } from "@/lib/server/public-content";
 import { formatDate } from "@/lib/format";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
@@ -38,17 +38,23 @@ export default async function NewsPage({ params }: NewsPageProps) {
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
   const newsItems = await getPublicNews();
+  const pc = await getNewsPageContent();
 
   const [featured, ...rest] = newsItems;
+
+  const heroEyebrow = locale === "km" ? (pc?.heroEyebrowKm || t("news.eyebrow")) : (pc?.heroEyebrowEn || t("news.eyebrow"));
+  const heroTitle = locale === "km" ? (pc?.heroTitleKm || t("pages.newsTitle")) : (pc?.heroTitleEn || t("pages.newsTitle"));
+  const heroDesc = locale === "km" ? (pc?.heroDescKm || t("news.description")) : (pc?.heroDescEn || t("news.description"));
+  const heroImage = pc?.heroImageUrl || "/images/news/academics.svg";
 
   return (
     <>
       <PageHero
         locale={locale}
-        eyebrow={t("news.eyebrow")}
-        title={t("pages.newsTitle")}
-        description={t("news.description")}
-        image="/images/news/academics.svg"
+        eyebrow={heroEyebrow}
+        title={heroTitle}
+        description={heroDesc}
+        image={heroImage}
       />
 
       <section className="py-20 sm:py-28">

@@ -7,6 +7,7 @@ import { fontsVariables } from "@/lib/fonts";
 import { buildMetadata } from "@/lib/seo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import NextTopLoader from "nextjs-toploader";
 
 import "@/app/globals.css";
 
@@ -46,6 +47,7 @@ export default async function LangLayout({ children, params }: LangLayoutProps) 
         />
       </head>
       <body className="flex min-h-screen flex-col antialiased">
+        <NextTopLoader color="#F38020" showSpinner={false} />
         <Suspense fallback={null}>
           <Header locale={locale} />
         </Suspense>

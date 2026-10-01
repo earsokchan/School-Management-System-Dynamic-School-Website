@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n";
 import { getTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo/page";
-import { getPublicEvents } from "@/lib/server/public-content";
+import { getPublicEvents, getEventsPageContent } from "@/lib/server/public-content";
 import { formatDate, formatDay, formatMonthShort } from "@/lib/format";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
@@ -38,15 +38,21 @@ export default async function EventsPage({ params }: EventsPageProps) {
   const locale: Locale = lang;
   const { t } = getTranslations(locale);
   const eventItems = await getPublicEvents();
+  const pc = await getEventsPageContent();
+
+  const heroEyebrow = locale === "km" ? (pc?.heroEyebrowKm || t("events.eyebrow")) : (pc?.heroEyebrowEn || t("events.eyebrow"));
+  const heroTitle = locale === "km" ? (pc?.heroTitleKm || t("pages.eventsTitle")) : (pc?.heroTitleEn || t("pages.eventsTitle"));
+  const heroDesc = locale === "km" ? (pc?.heroDescKm || t("events.description")) : (pc?.heroDescEn || t("events.description"));
+  const heroImage = pc?.heroImageUrl || "/images/events/khmer-new-year.svg";
 
   return (
     <>
       <PageHero
         locale={locale}
-        eyebrow={t("events.eyebrow")}
-        title={t("pages.eventsTitle")}
-        description={t("events.description")}
-        image="/images/events/khmer-new-year.svg"
+        eyebrow={heroEyebrow}
+        title={heroTitle}
+        description={heroDesc}
+        image={heroImage}
       />
 
       <section className="py-20 sm:py-28">
