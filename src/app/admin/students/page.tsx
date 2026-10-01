@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { StudentManager } from "@/components/admin/StudentManager";
 import { getAdminCollection } from "@/lib/server/admin-content";
-import type { Student } from "@/components/admin/StudentManager";
+import type { Student } from "@/lib/student-types";
 
 export const metadata: Metadata = { title: "Admin Students", robots: { index: false } };
 

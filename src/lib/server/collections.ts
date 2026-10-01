@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import type { Document } from "mongodb";
+import type { Db, Document } from "mongodb";
 import { getDatabase } from "@/lib/server/mongodb";
 
 export const collectionNames = [
@@ -50,6 +50,32 @@ export function isCollectionName(value: string): value is CollectionName {
   return (collectionNames as readonly string[]).includes(value);
 }
 
+let indexesReady: Promise<void> | null = null;
+
+function ensureIdIndexes(db: Db): void {
+  if (indexesReady) return;
+
+  indexesReady = (async () => {
+    const existing = (await db.listCollections({}, { nameOnly: true }).toArray()).map((item) => item.name);
+    for (const name of existing) {
+      try {
+        await db.collection(name).createIndex({ id: 1 });
+      } catch (error) {
+        console.warn(`Unable to create index on ${name}.id:`, error);
+      }
+    }
+  })().catch((error: unknown) => {
+    console.warn("Unable to prepare MongoDB indexes:", error);
+    indexesReady = null;
+  });
+}
+
+async function getDatabaseReady(): Promise<Db> {
+  const database = await getDatabase();
+  ensureIdIndexes(database);
+  return database;
+}
+
 function normalizeDocument(document: Document): Record<string, unknown> {
   const { _id, id, ...values } = document;
   return {
@@ -59,7 +85,7 @@ function normalizeDocument(document: Document): Record<string, unknown> {
 }
 
 export async function listCollection<T extends object>(name: CollectionName): Promise<T[]> {
-  const database = await getDatabase();
+  const database = await getDatabaseReady();
   const documents = await database.collection(name).find({}).sort({ _id: 1 }).toArray();
   return documents.map((document) => normalizeDocument(document) as T);
 }
@@ -68,7 +94,7 @@ export async function getCollectionDocument<T extends object>(
   name: CollectionName,
   id: string,
 ): Promise<T | null> {
-  const database = await getDatabase();
+  const database = await getDatabaseReady();
   const document = await database.collection(name).findOne({ id });
   return document ? (normalizeDocument(document) as T) : null;
 }
@@ -77,7 +103,7 @@ export async function createCollectionDocument(
   name: CollectionName,
   payload: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
-  const database = await getDatabase();
+  const database = await getDatabaseReady();
   const values = { ...payload };
   delete values._id;
   const suppliedId = values.id;
@@ -93,7 +119,7 @@ export async function updateCollectionDocument(
   id: string,
   payload: Record<string, unknown>,
 ): Promise<Record<string, unknown> | null> {
-  const database = await getDatabase();
+  const database = await getDatabaseReady();
   const values = { ...payload };
   delete values._id;
   delete values.id;
@@ -104,7 +130,7 @@ export async function updateCollectionDocument(
 }
 
 export async function deleteCollectionDocument(name: CollectionName, id: string): Promise<boolean> {
-  const database = await getDatabase();
+  const database = await getDatabaseReady();
   const result = await database.collection(name).deleteOne({ id });
   if (result.deletedCount === 1) revalidatePublicContent(name);
   return result.deletedCount === 1;
