@@ -32,6 +32,7 @@ import type { Locale } from "@/lib/i18n";
 import { adminT } from "@/lib/admin-translations";
 import { adminNavGroups } from "@/data/admin";
 import { cn } from "@/lib/cn";
+import { usesEdgeToEdgeLayout } from "@/lib/admin-layout";
 
 const AdminLocaleContext = createContext<Locale>("en");
 
@@ -244,9 +245,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
           <main className={cn(
             "w-full",
-            pathname === "/admin/pages/home" || pathname === "/admin/pages/about" || pathname === "/admin/pages/academics" || pathname === "/admin/academics" || pathname === "/admin/pages/students" || pathname === "/admin/pages/teachers" || pathname === "/admin/teachers" || pathname === "/admin/pages/news" || pathname === "/admin/pages/events" || pathname === "/admin/pages/gallery" || pathname === "/admin/pages/contact"
-              ? "overflow-hidden p-0"
-              : "p-4 sm:p-6 lg:p-8"
+            usesEdgeToEdgeLayout(pathname) ? "overflow-hidden p-0" : "p-4 sm:p-6 lg:p-8"
           )}>{children}</main>
         </div>
       </div>

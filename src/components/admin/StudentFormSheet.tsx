@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Upload, X } from "lucide-react";
 import { uploadImage } from "@/hooks/use-collection";
-import type { Student, StudentType } from "@/components/admin/StudentManager";
+import type { Student, StudentType } from "@/lib/student-types";
 
 export interface StudentClassOption {
   id: string;
@@ -29,9 +29,8 @@ function emptyForm(): Partial<Student> {
   };
 }
 
-const inputClass =
-  "w-full rounded-xl border border-border bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-black focus:ring-1 focus:ring-black disabled:opacity-50";
-const labelClass = "mb-1.5 block text-sm font-semibold text-foreground";
+const inputClass = "apple-input";
+const labelClass = "mb-1.5 block text-[13px] font-medium text-[#6e6e73]";
 
 export function StudentFormSheet({
   open,
@@ -101,40 +100,40 @@ export function StudentFormSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-sm">
-      <div className="relative flex h-full w-full max-w-md flex-col overflow-y-auto bg-white p-8 shadow-2xl animate-in slide-in-from-right duration-300">
+    <div className="fixed inset-0 z-[100] flex justify-end bg-black/25 backdrop-blur-md">
+      <div className="relative flex h-full w-full max-w-md flex-col overflow-y-auto rounded-l-[28px] bg-white p-7 shadow-2xl animate-in slide-in-from-right duration-300 sm:p-9">
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#6e6e73] transition-colors hover:bg-[#e8e8ed]"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
-        <h2 className="mb-6 text-xl font-bold text-foreground">
+        <h2 className="mb-7 text-[26px] font-semibold leading-tight tracking-[-0.015em] text-[#1d1d1f]">
           {student ? "Edit Student" : "Add New Student"}
         </h2>
 
         <form onSubmit={handleSubmit} className="flex flex-1 flex-col space-y-4">
-          <div className="mb-4 flex flex-col items-center">
+          <div className="mb-2 flex flex-col items-center">
             <div className="group relative">
-              <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-slate-100 bg-slate-50 shadow-sm transition-all group-hover:border-slate-200">
+              <div className="relative h-32 w-32 overflow-hidden rounded-full bg-[#f5f5f7] ring-1 ring-[#e8e8ed]">
                 {formData.photo ? (
                   <Image
                     src={formData.photo}
                     alt="Profile preview"
                     fill
-                    sizes="112px"
+                    sizes="128px"
                     className={`object-cover transition-opacity ${uploading ? "opacity-50" : "opacity-100"}`}
                   />
                 ) : (
-                  <span className="flex h-full w-full items-center justify-center text-3xl font-semibold text-muted-foreground">
+                  <span className="flex h-full w-full items-center justify-center text-5xl font-medium text-[#86868b]">
                     {(formData.name || "?").trim().charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
-              <label className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-white shadow-sm transition-colors hover:bg-slate-50">
-                <Upload className="h-4 w-4 text-slate-600" />
+              <label className="absolute bottom-0.5 right-0.5 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#0071e3] text-white shadow-md transition-colors hover:bg-[#0077ed]">
+                <Upload className="h-4 w-4" />
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
@@ -145,7 +144,7 @@ export function StudentFormSheet({
               </label>
             </div>
             {uploading ? (
-              <p className="mt-3 animate-pulse text-xs font-medium text-muted-foreground">Uploading...</p>
+              <p className="mt-3 animate-pulse text-[13px] text-[#86868b]">Uploading…</p>
             ) : null}
           </div>
 
@@ -295,18 +294,14 @@ export function StudentFormSheet({
             />
           </div>
 
-          <div className="mt-auto flex justify-end gap-3 pt-8">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
-            >
+          <div className="mt-auto flex justify-end gap-2.5 pt-9">
+            <button type="button" onClick={onClose} className="apple-btn apple-btn-secondary">
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || uploading}
-              className="rounded-xl bg-black px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-60"
+              className="apple-btn apple-btn-primary disabled:opacity-60"
             >
               {student ? "Save Changes" : "Add Student"}
             </button>

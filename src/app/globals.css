@@ -171,6 +171,57 @@ header {
 }
 
 @layer components {
+  /* ---- Apple design language ----------------------------------------
+     Palette + type scale lifted from apple.com: SF system stack,
+     #1d1d1f ink, #6e6e73 secondary, #86868b tertiary, #f5f5f7 canvas,
+     #d2d2d7 hairlines and #0071e3 system blue. */
+  .apple-canvas {
+    @apply rounded-[28px] bg-[#f5f5f7] p-4 sm:p-6 lg:p-8;
+  }
+
+  .apple-card {
+    @apply rounded-3xl border border-[#e8e8ed] bg-white;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.03),
+      0 12px 32px -18px rgba(0, 0, 0, 0.18);
+  }
+
+  .apple-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+  }
+
+  .apple-label {
+    @apply text-xs font-semibold uppercase tracking-[0.1em] text-[#86868b];
+  }
+
+  .apple-value {
+    @apply text-[15px] font-medium text-[#1d1d1f];
+  }
+
+  .apple-muted {
+    @apply text-[#6e6e73];
+  }
+
+  .apple-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition duration-200 active:scale-[0.98];
+  }
+
+  .apple-btn-primary {
+    @apply bg-[#0071e3] text-white hover:bg-[#0077ed];
+  }
+
+  .apple-btn-secondary {
+    @apply bg-[#f5f5f7] text-[#1d1d1f] hover:bg-[#e8e8ed];
+  }
+
+  .apple-btn-danger {
+    @apply bg-[#f5f5f7] text-[#d70015] hover:bg-[#ffe5e5];
+  }
+
+  .apple-input {
+    @apply w-full rounded-xl border border-[#d2d2d7] bg-white px-3.5 py-2.5 text-[15px] text-[#1d1d1f] outline-none transition focus:border-[#0071e3] focus:ring-2 focus:ring-[#cfe4ff];
+  }
+
   .container-site {
     @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
   }
